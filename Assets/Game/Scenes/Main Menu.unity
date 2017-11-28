@@ -708,6 +708,7 @@ GameObject:
   m_Component:
   - component: {fileID: 392392783}
   - component: {fileID: 392392782}
+  - component: {fileID: 392392784}
   m_Layer: 0
   m_Name: Rewired Input Manager
   m_TagString: Untagged
@@ -846,8 +847,14 @@ MonoBehaviour:
       _name: Player0
       _descriptiveName: Player0
       _startPlaying: 1
-      _defaultJoystickMaps: []
-      _defaultMouseMaps: []
+      _defaultJoystickMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultMouseMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
       _defaultKeyboardMaps:
       - _enabled: 1
         _categoryId: 0
@@ -865,13 +872,19 @@ MonoBehaviour:
       - _enabled: 1
         _categoryId: 0
         _layoutId: 0
-      _defaultMouseMaps: []
-      _defaultKeyboardMaps: []
+      _defaultMouseMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultKeyboardMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
       _defaultCustomControllerMaps: []
       _startingCustomControllers: []
-      _assignMouseOnStart: 0
-      _assignKeyboardOnStart: 0
-      _excludeFromControllerAutoAssignment: 0
+      _assignMouseOnStart: 1
+      _assignKeyboardOnStart: 1
+      _excludeFromControllerAutoAssignment: 1
     actions:
     - _id: 0
       _name: Horizontal
@@ -1021,6 +1034,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &392392784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 392392781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61f5243e96479c247848acd024ac8277, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &430992449
 GameObject:
   m_ObjectHideFlags: 0
@@ -2145,8 +2169,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 430992452}
   m_HandleRect: {fileID: 430992450}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2787,8 +2811,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rewiredInputManager: {fileID: 392392782}
-  _dontDestroyOnLoad: 0
-  _openOnStart: 1
+  _dontDestroyOnLoad: 1
+  _openOnStart: 0
   _keyboardMapDefaultLayout: 0
   _mouseMapDefaultLayout: 0
   _joystickMapDefaultLayout: 0
@@ -2903,12 +2927,12 @@ MonoBehaviour:
     - {fileID: 1264688017}
     _mainBackgroundImage: {fileID: 672461660}
   _showPlayersGroupLabel: 1
-  _showControllerGroupLabel: 1
+  _showControllerGroupLabel: 0
   _showAssignedControllersGroupLabel: 1
   _showSettingsGroupLabel: 1
   _showMapCategoriesGroupLabel: 1
-  _showControllerNameLabel: 1
-  _showAssignedControllers: 1
+  _showControllerNameLabel: 0
+  _showAssignedControllers: 0
   _onScreenClosed:
     m_PersistentCalls:
       m_Calls: []
@@ -4745,9 +4769,9 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1968046652}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 359090886}
   m_Father: {fileID: 1187189621}
