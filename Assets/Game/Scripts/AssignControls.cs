@@ -14,11 +14,8 @@ public class AssignControls : MonoBehaviour {
 
     void AssignControl()
     {
-        print("AssignControl start");
         if(!keyboardAssigned)
         {
-            print("keyboard not assigned");
-
             if(ReInput.controllers.Keyboard.GetAnyButtonDown())
             {
                 Player player = FindPlayerWithoutJoystick();
