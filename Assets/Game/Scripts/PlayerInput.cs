@@ -7,12 +7,30 @@ public class PlayerInput : MonoBehaviour {
 
     private Player player;
     private Vector2 cursorVector;
-    private Vector2 movementVector;
-    private bool fire;
+    private Vector2 radialVector;
+    private bool raidialActive;
+
     private bool thrust;
+    private bool fire;
+    private bool aim;
+
+    private bool dodgeRight;
+    private bool dodgeLeft;
+
+    private bool skipText;
+    private bool pause;
+    private bool back;
+    private bool confirm;
 
     [System.NonSerialized] // Don't serialize this so the value is lost on an editor script recompile.
     private bool initialized;
+
+    PlayerMovement playerMovement;
+
+    private void Awake()
+    {
+        GetReferences();
+    }
 
     private void Initialize()
     {
@@ -21,9 +39,19 @@ public class PlayerInput : MonoBehaviour {
         initialized = true;
     }
 
-    void Update () {
+    void GetReferences()
+    {
+        playerMovement = GetComponent<PlayerMovement>();
+    }
+
+    void Update ()
+    {
         if (!ReInput.isReady) return; // Exit if Rewired isn't ready. This would only happen during a script recompile in the editor.
         if (!initialized) Initialize();
+
+        RecieveInput();
+
+        playerMovement.Move(radialVector, thrust);
 
         //print("Player ID: " + playerID + ". ReticleX: " + player.GetAxis("ReticleX"));
         //print("Player ID: " + playerID + ". ReticleY: " + player.GetAxis("ReticleY"));
@@ -38,5 +66,29 @@ public class PlayerInput : MonoBehaviour {
         //print("Player ID: " + playerID + ". Pause: " + player.GetAxis("Pause"));
         //print("Player ID: " + playerID + ". Back: " + player.GetAxis("Back"));
         //print("Player ID: " + playerID + ". Confirm: " + player.GetAxis("Confirm"));
+    }
+
+    void RecieveInput()
+    {
+        cursorVector = new Vector2(player.GetAxis("ReticleX"), player.GetAxis("ReticleY"));
+
+        radialVector = new Vector2(player.GetAxis("Horizontal2"), player.GetAxis("Vertical2"));
+
+        if (radialVector != Vector2.zero)
+            raidialActive = true;
+        else
+            raidialActive = false;
+
+        thrust = player.GetButton("Thrust");
+        fire = player.GetButton("Fire");
+        aim = player.GetButton("Aim");
+
+        dodgeLeft = player.GetButton("DodgeLeft");
+        dodgeRight = player.GetButton("DodgeRight");
+
+        skipText = player.GetButton("SkipText");
+        pause = player.GetButton("Pause");
+        back = player.GetButton("Back");
+        confirm = player.GetButton("Confirm");
     }
 }
