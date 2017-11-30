@@ -15,9 +15,11 @@ public class PlayerMovement : MonoBehaviour
     public float speedIncreaseFrequency;
     public float speedDecreaseFrequency;
 
+
     [Space, Header("Rotations")]
 
     public float rotationSpeed;
+    public float cursorOffset;
 
     public Vector3 upAngle = new Vector3(-22.5f, 0,0);
     public Vector3 upRightAngle = new Vector3(-22.5f, 22.5f, -22.5f);
@@ -68,25 +70,44 @@ public class PlayerMovement : MonoBehaviour
     void Rotate(Vector2 cursorVector)
     {
         cursorVector = reticle.anchoredPosition;
+        Vector3 screenSpace = Camera.main.ViewportToScreenPoint(cursorVector);
 
-        if (cursorVector.x > 0 && cursorVector.y > 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(upRightAngle), rotationSpeed * Time.deltaTime);
-        else if (cursorVector.x < 0 && cursorVector.y > 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(upLeftAngle), rotationSpeed * Time.deltaTime);
-        else if (cursorVector.x > 0 && cursorVector.y < 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(downRightAngle), rotationSpeed * Time.deltaTime);
-        else if (cursorVector.x < 0 && cursorVector.y < 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(downLeftAngle), rotationSpeed * Time.deltaTime);
-        else if (cursorVector.y > 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(upAngle), rotationSpeed * Time.deltaTime);
-        else if (cursorVector.y < 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(downAngle), rotationSpeed * Time.deltaTime);
-        else if (cursorVector.x > 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-        else if (cursorVector.x < 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
-        else if (cursorVector.x == 0 && cursorVector.y == 0)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
+        float newAngle = Vector3.Angle(new Vector3(Screen.width, 0, 0), new Vector3(cursorVector.x, cursorVector.y, 0));
+
+        //print("Cursor Y Vector: " + screenSpace.y + " Screen Height / 2: " + Screen.height / 2);
+
+        if (screenSpace.y > Screen.height / 2)
+        {
+            if (newAngle <= 15)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 80 && newAngle > 15)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upRightAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 100 && newAngle > 80)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 165 && newAngle > 100)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upLeftAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 180)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
+        }
+        else if (screenSpace.y < Screen.height / 2)
+        {
+            if (newAngle <= 15)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 80 && newAngle > 15)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downRightAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 100 && newAngle > 80)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 165 && newAngle > 100)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downLeftAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 180)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
+        }
+
+           // if (newAngle > -cursorOffset && newAngle < cursorOffset && newAngle > -cursorOffset && newAngle < cursorOffset)
+           // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
+
+
+
     }
 
     IEnumerator ChangeSpeed(float amount, float frequency)
