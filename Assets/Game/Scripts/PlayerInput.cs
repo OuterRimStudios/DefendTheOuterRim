@@ -5,6 +5,8 @@ public class PlayerInput : MonoBehaviour {
 
     public int playerID = 0;
 
+    public CursorMovement cursor;
+
     private Player player;
     private Vector2 cursorVector;
     private Vector2 radialVector;
@@ -50,6 +52,8 @@ public class PlayerInput : MonoBehaviour {
         if (!initialized) Initialize();
 
         RecieveInput();
+
+        cursor.MoveCursor(cursorVector.x, cursorVector.y, player.controllers.hasMouse);
 
         playerMovement.Move(radialVector, thrust);
 

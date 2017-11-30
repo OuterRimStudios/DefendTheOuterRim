@@ -31,8 +31,6 @@ public class PlayerMovement : MonoBehaviour
     {
         rb.velocity = transform.forward * speed * Time.deltaTime;
 
-        print("Thrusting: " + thrust);
-
         if (thrust && !increasingSpeed && speed < maxForwardSpeed)
         {
             increasingSpeed = true;
@@ -47,7 +45,6 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator ChangeSpeed(float amount, float frequency)
     {
-        print("Changing Speed " + speed);
         speed += amount;
         yield return new WaitForSeconds(frequency);
         increasingSpeed = false;
