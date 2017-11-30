@@ -10,6 +10,8 @@ public class PlayerInput : MonoBehaviour {
     private Vector2 radialVector;
     private bool raidialActive;
 
+    public CursorMovement cursor;
+
     private bool thrust;
     private bool fire;
     private bool aim;
@@ -51,7 +53,9 @@ public class PlayerInput : MonoBehaviour {
 
         RecieveInput();
 
+        cursor.MoveCursor(cursorVector.x, cursorVector.y, player.controllers.hasMouse);
         playerMovement.Move(cursorVector, radialVector, thrust);
+
 
         //print("Player ID: " + playerID + ". ReticleX: " + player.GetAxis("ReticleX"));
         //print("Player ID: " + playerID + ". ReticleY: " + player.GetAxis("ReticleY"));
@@ -66,7 +70,7 @@ public class PlayerInput : MonoBehaviour {
         //print("Player ID: " + playerID + ". Pause: " + player.GetAxis("Pause"));
         //print("Player ID: " + playerID + ". Back: " + player.GetAxis("Back"));
         //print("Player ID: " + playerID + ". Confirm: " + player.GetAxis("Confirm"));
-    }
+}
 
     void RecieveInput()
     {
