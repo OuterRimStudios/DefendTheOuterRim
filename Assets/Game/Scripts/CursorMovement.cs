@@ -19,12 +19,12 @@ public class CursorMovement : MonoBehaviour
             float moveX = movex * speed * Time.deltaTime;
             float moveY = movey * speed * Time.deltaTime;
             transform.position += new Vector3(moveX, moveY, 0f);
-            transform.position = new Vector3(Mathf.Clamp(transform.position.x, Screen.width * .2f, Screen.width * .8f), Mathf.Clamp(transform.position.y, Screen.height * .3f, Screen.height * .7f), mainCam.nearClipPlane);
+            transform.position = new Vector3(Mathf.Clamp(transform.position.x, 0, Screen.width), Mathf.Clamp(transform.position.y, 0, Screen.height), mainCam.nearClipPlane);
         }
         else
         {
             transform.position = Input.mousePosition;
-            transform.position = new Vector3(Mathf.Clamp(transform.position.x, Screen.width * .2f, Screen.width * .8f), Mathf.Clamp(transform.position.y, Screen.height * .3f, Screen.height * .7f), mainCam.nearClipPlane);
+            transform.position = new Vector3(Mathf.Clamp(transform.position.x, 0, Screen.width), Mathf.Clamp(transform.position.y, 0, Screen.height ), mainCam.nearClipPlane);
         }
     }
 }

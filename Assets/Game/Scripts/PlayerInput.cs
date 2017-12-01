@@ -1,18 +1,20 @@
 ﻿using UnityEngine;
 using Rewired;
 
-public class PlayerInput : MonoBehaviour {
+public class PlayerInput : MonoBehaviour 
+{
 
     public int playerID = 0;
 
     private Player player;
-    private Vector2 cursorVector;
+    private Vector3 cursorVector;
     private Vector2 radialVector;
     private bool raidialActive;
 
     public CursorMovement cursor;
 
-    private bool thrust;
+	[HideInInspector]
+	public bool thrust;
     private bool fire;
     private bool aim;
 
@@ -74,7 +76,7 @@ public class PlayerInput : MonoBehaviour {
 
     void RecieveInput()
     {
-        cursorVector = new Vector2(player.GetAxis("ReticleX"), player.GetAxis("ReticleY"));
+        cursorVector = new Vector3(player.GetAxis("ReticleX"), player.GetAxis("ReticleY"),0);
 
         radialVector = new Vector2(player.GetAxis("Horizontal2"), player.GetAxis("Vertical2"));
 
@@ -83,7 +85,7 @@ public class PlayerInput : MonoBehaviour {
         else
             raidialActive = false;
 
-        thrust = player.GetButton("Thrust");
+        //thrust = player.GetButton("Thrust");
         fire = player.GetButton("Fire");
         aim = player.GetButton("Aim");
 

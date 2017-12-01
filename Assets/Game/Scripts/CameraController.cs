@@ -44,20 +44,25 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    void Update()
+    void LateUpdate()
     {
-        CameraRotation();
+
         if (!multiplayer)
-        {
-            transform.position = Vector3.Lerp(transform.position, playerOne.transform.position + offset, smoothTime * Time.deltaTime);
+		{
+			CameraRotation();
+            transform.root.position = Vector3.Lerp(transform.position, playerOne.transform.position + offset, smoothTime * Time.deltaTime);
         }
         else
         {
-            Vector3 targetLocation = (playerOne.position + playerTwo.position) / 2;
-            transform.position = Vector3.Lerp(transform.position, targetLocation + offset, smoothTime * Time.deltaTime);
+            Vector3 targetLocation = new Vector3((playerOne.position.x + playerTwo.position.x) / 2, (playerOne.position.y + playerTwo.position.y) / 2,
+                (playerOne.position.z + playerTwo.position.z) / 2);
+
+			transform.position = Vector3.SmoothDamp (transform.position, targetLocation + offset, ref velocity, smoothTime);
+            //transform.position = Vector3.Lerp(transform.position,targetLocation + offset, smoothTime * Time.deltaTime);
         }
     }
 
+    #region CameraRotation()
     void CameraRotation()
     {
         Vector3 cursorVector = reticle.anchoredPosition;
@@ -65,7 +70,7 @@ public class CameraController : MonoBehaviour
 
         float newAngle = Vector3.Angle(new Vector3(Screen.width, 0, 0), new Vector3(cursorVector.x, cursorVector.y, 0));
 
-        if (screenSpace.y > Screen.height / 2)
+        if (screenSpace.y > Screen.height / 2f)
         {
             if (newAngle <= 15)
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
@@ -78,7 +83,7 @@ public class CameraController : MonoBehaviour
             else if (newAngle <= 180)
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
         }
-        else if (screenSpace.y < Screen.height / 2)
+        else if (screenSpace.y < Screen.height / 2f)
         {
             if (newAngle <= 15)
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
@@ -91,5 +96,8 @@ public class CameraController : MonoBehaviour
             else if (newAngle <= 180)
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
         }
+        else
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
     }
+#endregion
 }
