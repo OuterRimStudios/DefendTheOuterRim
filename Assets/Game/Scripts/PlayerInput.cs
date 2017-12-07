@@ -55,8 +55,8 @@ public class PlayerInput : MonoBehaviour
 
         RecieveInput();
 
-        cursor.MoveCursor(cursorVector.x, cursorVector.y, player.controllers.hasMouse);
-        playerMovement.Move(cursorVector, radialVector, thrust);
+        //cursor.MoveCursor(cursorVector.x, cursorVector.y, player.controllers.hasMouse);
+        playerMovement.Move(cursorVector, thrust, player.controllers.hasMouse);
 
 
         //print("Player ID: " + playerID + ". ReticleX: " + player.GetAxis("ReticleX"));

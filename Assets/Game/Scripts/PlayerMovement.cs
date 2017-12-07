@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
 	public float rotationSpeed;
 
     public float cursorOffset;
+    public float clampRadius = 100;
 
     public Vector3 upAngle = new Vector3(-22.5f, 0,0);
     public Vector3 upRightAngle = new Vector3(-22.5f, 22.5f, -22.5f);
@@ -41,9 +42,9 @@ public class PlayerMovement : MonoBehaviour
     bool increasingSpeed;
     bool decreasingSpeed;
 
-    public RectTransform reticle;
-
     float speed;
+
+    Vector3 initialPos;
 
     Rigidbody rb;
 
@@ -51,22 +52,44 @@ public class PlayerMovement : MonoBehaviour
 
 	bool playerOne;
 
+    Camera mainCam;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        mainCam = Camera.main;
         speed = baseForwardSpeed;
 
 		if (GetComponent<PlayerInput> ().playerID == 0)
 			playerOne = true;
     }
 
-	public void Move (Vector2 cursorVector, Vector2 radialVector, bool thrust)
+	public void Move (Vector2 cursorVector, bool thrust, bool hasMouse)
     {
-        rb.velocity = transform.forward * speed * Time.deltaTime;
+        if (!hasMouse)
+        {
+            float moveX = cursorVector.x * speed * Time.deltaTime;
+            float moveY = cursorVector.y * speed * Time.deltaTime;
+            transform.position += new Vector3(moveX, moveY, 0f);
+        }
+        else
+        {
+            Vector3 mousePos = Input.mousePosition;
+            float moveX = mainCam.ScreenToWorldPoint(mousePos).x;
+            float moveY = mainCam.ScreenToWorldPoint(mousePos).y;
+            mousePos.z = 10;
+            transform.position = mainCam.ScreenToWorldPoint(mousePos);
+        }
 
-	//	transform.position = new Vector3(Mathf.Clamp(transform.position.x, Camera.main.transform.position.x + (-10), Camera.main.transform.position.x + 10)
-	//		, Mathf.Clamp(transform.position.y,Camera.main.transform.position.y + (-8),Camera.main.transform.position.y + 8), transform.position.z);
-
+        //if (!playerOne)
+        //{
+        //    //Vector3 newPos = transform.position + new Vector3(cursorVector.x, cursorVector.y, 0f);
+        //    Vector3 playerOnePos = PlayerWrangler.GetPlayer(0).transform.position;
+        //    Vector3 offset = new Vector3(5, 5, 0) + playerOnePos;
+        //    transform.position = playerOnePos + Vector3.ClampMagnitude(offset, clampRadius);
+        //}
+        //else
+        //rb.velocity = transform.forward * speed * Time.deltaTime;
 
         if (thrust && !increasingSpeed && speed < maxForwardSpeed)
         {
@@ -79,54 +102,54 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(ChangeSpeed(-speedDecreaseAmount, speedDecreaseFrequency));
         }
 
-        Rotate(cursorVector);
+        //Rotate(cursorVector);
     }
 
-    void Rotate(Vector2 cursorVector)
-    {
-        cursorVector = reticle.anchoredPosition;
-        Vector3 screenSpace = Camera.main.ViewportToScreenPoint(cursorVector);
-       // if (screenSpace.x > Screen.width / .4f || screenSpace.x < Screen.width / .6f || screenSpace.y > Screen.height / .4f || screenSpace.y < Screen.height / .6f) return;
+    //void Rotate(Vector2 cursorVector)
+    //{
+    //    cursorVector = reticle.anchoredPosition;
+    //    Vector3 screenSpace = Camera.main.ViewportToScreenPoint(cursorVector);
+    //   // if (screenSpace.x > Screen.width / .4f || screenSpace.x < Screen.width / .6f || screenSpace.y > Screen.height / .4f || screenSpace.y < Screen.height / .6f) return;
 
-        float newAngle = Vector3.Angle(new Vector3(Screen.width, 0, 0), new Vector3(cursorVector.x, cursorVector.y, 0));
+    //    float newAngle = Vector3.Angle(new Vector3(Screen.width, 0, 0), new Vector3(cursorVector.x, cursorVector.y, 0));
 
-        //print("Cursor Y Vector: " + screenSpace.y + " Screen Height / 2: " + Screen.height / 2);
+    //    //print("Cursor Y Vector: " + screenSpace.y + " Screen Height / 2: " + Screen.height / 2);
 
-        if (screenSpace.y > Screen.height / 2f)
-        {
-            if (newAngle <= 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 80 && newAngle > 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upRightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 100 && newAngle > 80)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 165 && newAngle > 100)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upLeftAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 180)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
-        }
-        else if (screenSpace.y < Screen.height / 2f)
-        {
-            if (newAngle <= 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 80 && newAngle > 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downRightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 100 && newAngle > 80)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 165 && newAngle > 100)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downLeftAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 180)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
-        }
-        else
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
+    //    if (screenSpace.y > Screen.height / 2f)
+    //    {
+    //        if (newAngle <= 15)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
+    //        else if (newAngle <= 80 && newAngle > 15)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upRightAngle), rotationSpeed * Time.deltaTime);
+    //        else if (newAngle <= 100 && newAngle > 80)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upAngle), rotationSpeed * Time.deltaTime);
+    //        else if (newAngle <= 165 && newAngle > 100)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upLeftAngle), rotationSpeed * Time.deltaTime);
+    //        else if (newAngle <= 180)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
+    //    }
+    //    else if (screenSpace.y < Screen.height / 2f)
+    //    {
+    //        if (newAngle <= 15)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
+    //        else if (newAngle <= 80 && newAngle > 15)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downRightAngle), rotationSpeed * Time.deltaTime);
+    //        else if (newAngle <= 100 && newAngle > 80)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downAngle), rotationSpeed * Time.deltaTime);
+    //        else if (newAngle <= 165 && newAngle > 100)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downLeftAngle), rotationSpeed * Time.deltaTime);
+    //        else if (newAngle <= 180)
+    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
+    //    }
+    //    else
+    //        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
 
-        // if (newAngle > -cursorOffset && newAngle < cursorOffset && newAngle > -cursorOffset && newAngle < cursorOffset)
-        // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
+    //    // if (newAngle > -cursorOffset && newAngle < cursorOffset && newAngle > -cursorOffset && newAngle < cursorOffset)
+    //    // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
 
 
 
-    }
+    //}
 
     IEnumerator ChangeSpeed(float amount, float frequency)
     {
