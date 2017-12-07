@@ -19,7 +19,9 @@ public class SharedInput : MonoBehaviour
 		playerTwo = ReInput.players.GetPlayer (1);
 
 		playerOneInput = GameObject.Find ("PlayerOne").GetComponent<PlayerInput> ();
-		playerTwoInput = GameObject.Find ("PlayerTwo").GetComponent<PlayerInput> ();
+
+		if(GameObject.Find("PlayerTwo") != null)
+			playerTwoInput = GameObject.Find ("PlayerTwo").GetComponent<PlayerInput> ();
 	}
 
 	void Update () 

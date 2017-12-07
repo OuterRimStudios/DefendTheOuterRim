@@ -1,0 +1,280 @@
+fileFormatVersion: 2
+guid: 17a07d4659b80da41afc0789f922620b
+timeCreated: 1512526319
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Box001
+    100002: Box002
+    100004: Box003
+    100006: Box004
+    100008: Box005
+    100010: Box008
+    100012: Box009
+    100014: Box016
+    100016: Box018
+    100018: Box019
+    100020: Box023
+    100022: Box024
+    100024: Box025
+    100026: Box026
+    100028: Box027
+    100030: Box028
+    100032: Box029
+    100034: Box030
+    100036: Cylinder001
+    100038: Cylinder002
+    100040: Fusaloge
+    100042: Fusaloge Faring
+    100044: Object001
+    100046: Object003
+    100048: Object004
+    100050: Object005
+    100052: Object006
+    100054: Plane001
+    100056: Plane002
+    100058: //RootNode
+    400000: Box001
+    400002: Box002
+    400004: Box003
+    400006: Box004
+    400008: Box005
+    400010: Box008
+    400012: Box009
+    400014: Box016
+    400016: Box018
+    400018: Box019
+    400020: Box023
+    400022: Box024
+    400024: Box025
+    400026: Box026
+    400028: Box027
+    400030: Box028
+    400032: Box029
+    400034: Box030
+    400036: Cylinder001
+    400038: Cylinder002
+    400040: Fusaloge
+    400042: Fusaloge Faring
+    400044: Object001
+    400046: Object003
+    400048: Object004
+    400050: Object005
+    400052: Object006
+    400054: Plane001
+    400056: Plane002
+    400058: //RootNode
+    2300000: Box001
+    2300002: Box002
+    2300004: Box004
+    2300006: Box005
+    2300008: Box008
+    2300010: Box009
+    2300012: Box018
+    2300014: Box019
+    2300016: Box023
+    2300018: Box024
+    2300020: Box025
+    2300022: Box026
+    2300024: Box027
+    2300026: Box028
+    2300028: Box029
+    2300030: Box030
+    2300032: Cylinder002
+    2300034: Fusaloge
+    2300036: Fusaloge Faring
+    2300038: Object001
+    2300040: Object003
+    2300042: Object004
+    2300044: Object005
+    2300046: Object006
+    2300048: Plane001
+    2300050: Plane002
+    3300000: Box001
+    3300002: Box002
+    3300004: Box004
+    3300006: Box005
+    3300008: Box008
+    3300010: Box009
+    3300012: Box018
+    3300014: Box019
+    3300016: Box023
+    3300018: Box024
+    3300020: Box025
+    3300022: Box026
+    3300024: Box027
+    3300026: Box028
+    3300028: Box029
+    3300030: Box030
+    3300032: Cylinder002
+    3300034: Fusaloge
+    3300036: Fusaloge Faring
+    3300038: Object001
+    3300040: Object003
+    3300042: Object004
+    3300044: Object005
+    3300046: Object006
+    3300048: Plane001
+    3300050: Plane002
+    4300000: Fusaloge
+    4300002: Box024
+    4300004: Box023
+    4300006: Box026
+    4300008: Box025
+    4300010: Object003
+    4300012: Box009
+    4300014: Fusaloge Faring
+    4300016: Box027
+    4300018: Box028
+    4300020: Cylinder002
+    4300022: Box001
+    4300024: Box002
+    4300026: Box008
+    4300028: Object001
+    4300030: Object004
+    4300032: Object005
+    4300034: Plane001
+    4300036: Object006
+    4300038: Plane002
+    4300040: Box004
+    4300042: Box018
+    4300044: Box019
+    4300046: Box005
+    4300048: Box029
+    4300050: Box030
+    7400000: Take 001
+    9500000: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Canopy
+    second: {fileID: 2100000, guid: d34c37182d130bd4994a19f4fc383061, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Connecting PArts
+    second: {fileID: 2100000, guid: a09a4c586d1320348ae292d1d3d10bba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Emissice Engine Exhaust
+    second: {fileID: 2100000, guid: abd76b6f51c66b847a409c1d4a8321dd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Fusalge
+    second: {fileID: 2100000, guid: 4db8054341d01754e99cd1dc9f19a99d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MAin Engines Flange
+    second: {fileID: 2100000, guid: 1707fc3c4e6b6324eb82053421ccef49, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Main Weapons
+    second: {fileID: 2100000, guid: a2286cdf532c0424aa1fb23600362fa4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MainEngine Front
+    second: {fileID: 2100000, guid: b4bcf9a21bcefd544b87dfa5c103940f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MainEngines
+    second: {fileID: 2100000, guid: d7cb08386b2287c43a4240f139a755e2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: No Name
+    second: {fileID: 2100000, guid: 4e5450ff79898ff479b8f85f3e7eaa19, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Rear Fins
+    second: {fileID: 2100000, guid: 746ff04dda292a14cba514e046bee047, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Upper Intake
+    second: {fileID: 2100000, guid: b17c571d2e6b7a246808ff859fe02625, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

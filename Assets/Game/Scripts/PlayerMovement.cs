@@ -62,7 +62,9 @@ public class PlayerMovement : MonoBehaviour
 
 	public void Move (Vector2 cursorVector, Vector2 radialVector, bool thrust)
     {
-        rb.velocity = transform.forward * speed * Time.deltaTime;
+       // rb.velocity = transform.forward * speed * Time.deltaTime;
+
+		rb.AddForce(transform.forward * speed * Time.deltaTime);
 
 	//	transform.position = new Vector3(Mathf.Clamp(transform.position.x, Camera.main.transform.position.x + (-10), Camera.main.transform.position.x + 10)
 	//		, Mathf.Clamp(transform.position.y,Camera.main.transform.position.y + (-8),Camera.main.transform.position.y + 8), transform.position.z);
@@ -84,6 +86,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Rotate(Vector2 cursorVector)
     {
+		transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.Euler (cursorVector), speed * Time.deltaTime);
+
+		return;
         cursorVector = reticle.anchoredPosition;
         Vector3 screenSpace = Camera.main.ViewportToScreenPoint(cursorVector);
        // if (screenSpace.x > Screen.width / .4f || screenSpace.x < Screen.width / .6f || screenSpace.y > Screen.height / .4f || screenSpace.y < Screen.height / .6f) return;

@@ -49,8 +49,8 @@ public class CameraController : MonoBehaviour
 
         if (!multiplayer)
 		{
-			CameraRotation();
-            transform.root.position = Vector3.Lerp(transform.position, playerOne.transform.position + offset, smoothTime * Time.deltaTime);
+			//CameraRotation();
+			transform.position = Vector3.SmoothDamp (transform.position, playerOne.transform.position + offset, ref velocity, smoothTime);
         }
         else
         {
