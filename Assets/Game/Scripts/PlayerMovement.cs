@@ -52,7 +52,9 @@ public class PlayerMovement : MonoBehaviour
 
 	bool playerOne;
 
+	public float clampValue = 35f;
     Camera mainCam;
+	GameObject cursor;
 
     void Start()
     {
@@ -62,15 +64,19 @@ public class PlayerMovement : MonoBehaviour
 
 		if (GetComponent<PlayerInput> ().playerID == 0)
 			playerOne = true;
+
+		cursor = transform.Find ("Cursor").gameObject;
+		cursor.transform.parent = null;
+
     }
 
-	public void Move (Vector2 cursorVector, bool thrust, bool hasMouse)
+    public void Move(Vector2 cursorVector, bool thrust, bool hasMouse)
     {
         if (!hasMouse)
         {
             float moveX = cursorVector.x * speed * Time.deltaTime;
             float moveY = cursorVector.y * speed * Time.deltaTime;
-            transform.position += new Vector3(moveX, moveY, 0f);
+            cursor.transform.position += new Vector3(moveX, moveY, 0f);
         }
         else
         {
@@ -78,8 +84,22 @@ public class PlayerMovement : MonoBehaviour
             float moveX = mainCam.ScreenToWorldPoint(mousePos).x;
             float moveY = mainCam.ScreenToWorldPoint(mousePos).y;
             mousePos.z = 10;
-            transform.position = mainCam.ScreenToWorldPoint(mousePos);
+            cursor.transform.position = mainCam.ScreenToWorldPoint(mousePos);
         }
+
+        //transform.LookAt (cursor.transform.position);
+        Vector3 targetPos = new Vector3(cursor.transform.position.x, cursor.transform.position.y, transform.position.z);
+        transform.position = Vector3.Lerp(transform.position, targetPos, speed * Time.deltaTime);
+
+
+        //		Vector3 targetRot = cursor.transform.position - transform.position;
+        //		Quaternion rotation = Quaternion.LookRotation (targetRot);
+        //
+        //		transform.rotation = rotation;
+
+
+
+
 
         //if (!playerOne)
         //{
@@ -102,54 +122,50 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(ChangeSpeed(-speedDecreaseAmount, speedDecreaseFrequency));
         }
 
-        //Rotate(cursorVector);
+        Rotate(cursorVector);
     }
 
-    //void Rotate(Vector2 cursorVector)
-    //{
-    //    cursorVector = reticle.anchoredPosition;
-    //    Vector3 screenSpace = Camera.main.ViewportToScreenPoint(cursorVector);
-    //   // if (screenSpace.x > Screen.width / .4f || screenSpace.x < Screen.width / .6f || screenSpace.y > Screen.height / .4f || screenSpace.y < Screen.height / .6f) return;
+    void Rotate(Vector2 cursorVector)
+	{
+		Vector3 screenSpace = mainCam.WorldToScreenPoint(cursor.transform.position);
+		if (screenSpace.x > Screen.width / .4f || screenSpace.x < Screen.width / .6f || screenSpace.y > Screen.height / .4f || screenSpace.y < Screen.height / .6f) return;
 
-    //    float newAngle = Vector3.Angle(new Vector3(Screen.width, 0, 0), new Vector3(cursorVector.x, cursorVector.y, 0));
+		float newAngle = Vector3.Angle(mainCam.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)) + new Vector3(0,mainCam.transform.position.y,0), new Vector3(cursor.transform.position.x, cursor.transform.position.y, 0));
+        //
 
-    //    //print("Cursor Y Vector: " + screenSpace.y + " Screen Height / 2: " + Screen.height / 2);
+        if (screenSpace.y > Screen.height / 2f)
+        {
+            if (newAngle <= 15)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 80 && newAngle > 15)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upRightAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 100 && newAngle > 80)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 165 && newAngle > 100)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upLeftAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 180)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
+        }
+        else if (screenSpace.y < Screen.height / 2f)
+        {
+            if (newAngle <= 15)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 80 && newAngle > 15)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downRightAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 100 && newAngle > 80)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 165 && newAngle > 100)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downLeftAngle), rotationSpeed * Time.deltaTime);
+            else if (newAngle <= 180)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
+        }
+        else
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
 
-    //    if (screenSpace.y > Screen.height / 2f)
-    //    {
-    //        if (newAngle <= 15)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-    //        else if (newAngle <= 80 && newAngle > 15)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upRightAngle), rotationSpeed * Time.deltaTime);
-    //        else if (newAngle <= 100 && newAngle > 80)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upAngle), rotationSpeed * Time.deltaTime);
-    //        else if (newAngle <= 165 && newAngle > 100)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upLeftAngle), rotationSpeed * Time.deltaTime);
-    //        else if (newAngle <= 180)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
-    //    }
-    //    else if (screenSpace.y < Screen.height / 2f)
-    //    {
-    //        if (newAngle <= 15)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-    //        else if (newAngle <= 80 && newAngle > 15)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downRightAngle), rotationSpeed * Time.deltaTime);
-    //        else if (newAngle <= 100 && newAngle > 80)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downAngle), rotationSpeed * Time.deltaTime);
-    //        else if (newAngle <= 165 && newAngle > 100)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downLeftAngle), rotationSpeed * Time.deltaTime);
-    //        else if (newAngle <= 180)
-    //            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
-    //    }
-    //    else
-    //        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
+        // if (newAngle > -cursorOffset && newAngle < cursorOffset && newAngle > -cursorOffset && newAngle < cursorOffset)
+        // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
 
-    //    // if (newAngle > -cursorOffset && newAngle < cursorOffset && newAngle > -cursorOffset && newAngle < cursorOffset)
-    //    // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
-
-
-
-    //}
+    }
 
     IEnumerator ChangeSpeed(float amount, float frequency)
     {
