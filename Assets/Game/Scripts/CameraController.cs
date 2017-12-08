@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour
 {
@@ -10,94 +9,113 @@ public class CameraController : MonoBehaviour
     public Vector3 offset;
     public float smoothTime = 0.3F;
 
-    public RectTransform reticle;
-
-    public float rotationSpeed;
-
-    public Vector3 upAngle = new Vector3(-22.5f, 0, 0);
-    public Vector3 upRightAngle = new Vector3(-22.5f, 22.5f, -22.5f);
-    public Vector3 upLeftAngle = new Vector3(-22.5f, -22.5f, 22.5f);
-
-    public Vector3 downAngle = new Vector3(22.5f, 0, -0);
-    public Vector3 downRightAngle = new Vector3(22.5f, 22.5f, -22.5f);
-    public Vector3 downLeftAngle = new Vector3(22.5f, -22.5f, 22.5f);
-
-    public Vector3 rightAngle = new Vector3(0, 22.5f, -22.5f);
-    public Vector3 leftAngle = new Vector3(0, -22.5f, 22.5f);
-
-
     Transform playerOne;
     Transform playerTwo;
+
+    GameObject[] cursors;
+
+    float leftPan;
+    float rightPan;
+    float upPan;
+    float downPan;
+
+    [HideInInspector]
+    public Vector3[] panVectors;
+
+    Camera mainCam;
 
     private Vector3 velocity = Vector3.zero;
 
     void Start()
     {
+        mainCam = Camera.main;
+
         playerOne = GameObject.Find("PlayerOne").transform;
 
         if (multiplayer)
             playerTwo = GameObject.Find("PlayerTwo").transform;
 
-        if (hideCursor)
-        {
-            Cursor.visible = false;
-        }
+        cursors = GameObject.FindGameObjectsWithTag("Cursor");
+
+        Cursor.visible = !hideCursor;
+
+        leftPan = Screen.width * 0.2f;
+        rightPan = Screen.width * 0.8f;
+        upPan = Screen.height * 0.8f;
+        downPan = Screen.height * 0.2f;
+
+        panVectors = new Vector3[cursors.Length];
+    }
+
+    void Update()
+    {
+        CheckForPan();
     }
 
     void LateUpdate()
     {
+        Pan();
 
-        if (!multiplayer)
-		{
-			CameraRotation();
-            transform.root.position = Vector3.Lerp(transform.position, playerOne.transform.position + offset, smoothTime * Time.deltaTime);
-        }
-        else
-        {
-            Vector3 targetLocation = new Vector3((playerOne.position.x + playerTwo.position.x) / 2, (playerOne.position.y + playerTwo.position.y) / 2,
-                (playerOne.position.z + playerTwo.position.z) / 2);
+  //      if (!multiplayer)
+		//{
+  //          transform.root.position = Vector3.Lerp(transform.position, playerOne.transform.position + offset, smoothTime * Time.deltaTime);
+  //      }
+  //      else
+  //      {
+  //          Vector3 targetLocation = new Vector3((playerOne.position.x + playerTwo.position.x) / 2, (playerOne.position.y + playerTwo.position.y) / 2, (playerOne.position.z + playerTwo.position.z) / 2);
 
-			transform.position = Vector3.SmoothDamp (transform.position, targetLocation + offset, ref velocity, smoothTime);
-            //transform.position = Vector3.Lerp(transform.position,targetLocation + offset, smoothTime * Time.deltaTime);
-        }
+		//	transform.position = Vector3.SmoothDamp (transform.position, targetLocation + offset, ref velocity, smoothTime);
+  //          //transform.position = Vector3.Lerp(transform.position,targetLocation + offset, smoothTime * Time.deltaTime);
+  //      }
     }
 
-    #region CameraRotation()
-    void CameraRotation()
+    void CheckForPan()
     {
-        Vector3 cursorVector = reticle.anchoredPosition;
-        Vector3 screenSpace = Camera.main.ViewportToScreenPoint(cursorVector);
+        Vector3[] cursorScreenPositions = new Vector3[cursors.Length];
 
-        float newAngle = Vector3.Angle(new Vector3(Screen.width, 0, 0), new Vector3(cursorVector.x, cursorVector.y, 0));
+        for(int i = 0; i < cursors.Length; i++)
+        {
+            cursorScreenPositions[i] = mainCam.WorldToScreenPoint(cursors[i].transform.position);
 
-        if (screenSpace.y > Screen.height / 2f)
-        {
-            if (newAngle <= 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 80 && newAngle > 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upRightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 100 && newAngle > 80)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 165 && newAngle > 100)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upLeftAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 180)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
+            if (cursorScreenPositions[i].x < leftPan)
+            {
+                panVectors[i].x = -1;
+            }
+            else if(cursorScreenPositions[i].x > rightPan)
+            {
+                panVectors[i].x = 1;
+            }
+            else
+            {
+                panVectors[i].x = 0;
+            }
+
+            if (cursorScreenPositions[i].y < downPan)
+            {
+                panVectors[i].y = -1;
+            }
+            else if (cursorScreenPositions[i].y > upPan)
+            {
+                panVectors[i].y = 1;
+            }
+            else
+            {
+                panVectors[i].y = 0;
+            }
         }
-        else if (screenSpace.y < Screen.height / 2f)
-        {
-            if (newAngle <= 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 80 && newAngle > 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downRightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 100 && newAngle > 80)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 165 && newAngle > 100)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downLeftAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 180)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
-        }
-        else
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
     }
-#endregion
+
+    void Pan()
+    {
+        if (!multiplayer)
+            transform.position += new Vector3(panVectors[0].normalized.x * smoothTime * Time.deltaTime, panVectors[0].normalized.y * smoothTime * Time.deltaTime, 0);
+        else
+            transform.position += new Vector3((panVectors[0].normalized + panVectors[1].normalized).x * smoothTime * Time.deltaTime, (panVectors[0].normalized + panVectors[1].normalized).y * smoothTime * Time.deltaTime, 0);
+    }
+
+    /*
+     * detect if cursor is in the "pan" area, then pan
+     * if both cursors are in opposing pan areas, the camera will move back(zoom out) - this will be clamped
+     * as cursors move back towards each other, the camera will zoom in - this will be clamped
+     */
 }

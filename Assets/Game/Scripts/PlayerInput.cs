@@ -3,7 +3,6 @@ using Rewired;
 
 public class PlayerInput : MonoBehaviour 
 {
-
     public int playerID = 0;
 
     private Player player;
@@ -46,6 +45,7 @@ public class PlayerInput : MonoBehaviour
     void GetReferences()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        playerMovement.playerID = playerID;
     }
 
     void Update ()

@@ -19,12 +19,16 @@ public class PlayerMovement : MonoBehaviour
 
     [Space, Header("Rotation Variables")]
     public float rotationSpeed = 100f;
-    public float cursorClampX = 30f;
+    public float cursorClampXMin = 30f;
+    public float cursorClampXMax = 30f;
     public float cursorClampYMin = 15f;
     public float cursorClampYMax = 20f;
     public float xClamp = 25f;
     public float yClamp = 25f;
     public float zClamp = 25f;
+
+    [HideInInspector]
+    public int playerID;
 
     bool increasingSpeed;
     bool decreasingSpeed;
@@ -48,10 +52,13 @@ public class PlayerMovement : MonoBehaviour
     float moveX;
     float moveY;
 
+    CameraController camController;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         mainCam = Camera.main;
+        camController = mainCam.GetComponent<CameraController>();
         speed = baseForwardSpeed;
 
 		if (GetComponent<PlayerInput> ().playerID == 0)
@@ -63,8 +70,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(Vector2 cursorVector, bool thrust, bool hasMouse)
     {
-        cursor.transform.position = new Vector3(cursor.transform.position.x, cursor.transform.position.y, transform.position.z);
-
         if (!hasMouse)
         {
             moveX = cursorVector.x * (horizontalSpeed * 5) * Time.deltaTime;
@@ -75,22 +80,36 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            moveX = cursorVector.x * (horizontalSpeed) * Time.deltaTime;
-            moveY = cursorVector.y * (horizontalSpeed) * Time.deltaTime;
+            if (cursorVector.x == 0 && camController.panVectors[playerID].x != 0)
+                moveX = camController.panVectors[playerID].x * (horizontalSpeed * 5) * Time.deltaTime;
+            else
+                moveX = cursorVector.x * (horizontalSpeed) * Time.deltaTime;
+
+            if (cursorVector.y == 0 && camController.panVectors[playerID].y != 0)
+                moveY = camController.panVectors[playerID].y * (horizontalSpeed * 5) * Time.deltaTime;
+            else
+                moveY = cursorVector.y * (horizontalSpeed) * Time.deltaTime;
             cursor.transform.position += new Vector3(moveX, moveY, 0f);
 
             MouseRotate(cursorVector);
         }
 
-        cursor.transform.position = new Vector3(Mathf.Clamp(cursor.transform.position.x, -cursorClampX, cursorClampX),
-            Mathf.Clamp(cursor.transform.position.y, -cursorClampYMin, cursorClampYMax), cursor.transform.position.z);
+        float dist = (cursor.transform.position.z - mainCam.transform.position.z);
+
+        float cursorLeftClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMin, 0, dist)).x;
+        float cursorRightClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMax, 0, dist)).x;
+        float cursorUpClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMax, dist)).y;
+        float cursorDownClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMin, dist)).y;
+
+        cursor.transform.position = new Vector3(Mathf.Clamp(cursor.transform.position.x, cursorLeftClamp, cursorRightClamp),
+            Mathf.Clamp(cursor.transform.position.y, cursorDownClamp, cursorUpClamp), cursor.transform.position.z);
 
         Vector3 targetPos = new Vector3(cursor.transform.position.x, cursor.transform.position.y, transform.position.z);
         transform.position = Vector3.Lerp(transform.position, targetPos, shipFollowSpeed * Time.deltaTime);
 
         transform.localEulerAngles = new Vector3(-rotationX, rotationY, -rotationZ);
 
-        rb.velocity = Vector3.forward * speed * Time.deltaTime;
+        //rb.velocity = Vector3.forward * speed * Time.deltaTime;
 
         if (thrust && !increasingSpeed && speed < maxForwardSpeed)
         {
