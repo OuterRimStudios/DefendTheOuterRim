@@ -114,6 +114,9 @@ public class CameraController : MonoBehaviour
     }
 
     /*
+     * fix camera smooth when cursor is in corners
+     * fix mouse pan getting fucked when you move slightly while in pan zone
+     * 
      * detect if cursor is in the "pan" area, then pan
      * if both cursors are in opposing pan areas, the camera will move back(zoom out) - this will be clamped
      * as cursors move back towards each other, the camera will zoom in - this will be clamped
