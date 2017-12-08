@@ -85,17 +85,12 @@ public class PlayerMovement : MonoBehaviour
         cursor.transform.position = new Vector3(Mathf.Clamp(cursor.transform.position.x, -cursorClampX, cursorClampX),
             Mathf.Clamp(cursor.transform.position.y, -cursorClampYMin, cursorClampYMax), cursor.transform.position.z);
 
-        //Vector3 cursorPos = new Vector3(moveX, moveY, 0);
-        //Vector3 newPos = cursor.transform.position + cursorPos;
-        //Vector3 offset = newPos - initialPos;
-        //cursor.transform.position = initialPos + Vector3.ClampMagnitude(offset, cursorClampRadius);
-
         Vector3 targetPos = new Vector3(cursor.transform.position.x, cursor.transform.position.y, transform.position.z);
         transform.position = Vector3.Lerp(transform.position, targetPos, shipFollowSpeed * Time.deltaTime);
 
         transform.localEulerAngles = new Vector3(-rotationX, rotationY, -rotationZ);
 
-       // rb.velocity = Vector3.forward * speed * Time.deltaTime;
+        rb.velocity = Vector3.forward * speed * Time.deltaTime;
 
         if (thrust && !increasingSpeed && speed < maxForwardSpeed)
         {
