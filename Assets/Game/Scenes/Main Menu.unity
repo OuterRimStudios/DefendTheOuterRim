@@ -3059,9 +3059,8 @@ GameObject:
   - component: {fileID: 650107471}
   - component: {fileID: 650107473}
   - component: {fileID: 650107472}
-  - component: {fileID: 650107474}
   m_Layer: 5
-  m_Name: PlayerTwoReticleCursor
+  m_Name: Reticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3118,19 +3117,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 650107470}
---- !u!114 &650107474
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 650107470}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e14391e1e61e05d4cb2c492987e4b097, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 1000
-  clampRadius: 500
 --- !u!1 &663806566
 GameObject:
   m_ObjectHideFlags: 0
@@ -4552,7 +4538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerID: 1
-  cursor: {fileID: 650107474}
+  cursor: {fileID: 0}
   thrust: 0
 --- !u!4 &978965912
 Transform:
@@ -4595,27 +4581,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d75acd98a96b6c46a64cddb8e2ec4f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseForwardSpeed: 10
-  maxForwardSpeed: 500
-  speedIncreaseAmount: 1
-  speedDecreaseAmount: 2
+  baseForwardSpeed: 500
+  maxForwardSpeed: 1000
+  horizontalSpeed: 10
+  shipFollowSpeed: 7.5
+  speedIncreaseAmount: 100
+  speedDecreaseAmount: 200
   speedIncreaseFrequency: 0.5
   speedDecreaseFrequency: 0.5
-  outerZoneRotationSpeed: 0
-  midZoneRotationSpeed: 0
-  rotationSpeed: 3
-  cursorOffset: 100
-  clampRadius: 100
-  upAngle: {x: -45, y: 0, z: 0}
-  upRightAngle: {x: -30, y: 75, z: -30}
-  upLeftAngle: {x: -30, y: -75, z: 30}
-  downAngle: {x: 45, y: 0, z: 0}
-  downRightAngle: {x: 30, y: 75, z: -30}
-  downLeftAngle: {x: 30, y: -75, z: 30}
-  rightAngle: {x: 0, y: 75, z: -30}
-  leftAngle: {x: 0, y: -75, z: 30}
-  deadzone: 0
-  clampValue: 35
+  rotationSpeed: 100
+  cursorClampX: 30
+  cursorClampYMin: 15
+  cursorClampYMax: 20
+  xClamp: 35
+  yClamp: 15
+  zClamp: 35
 --- !u!1 &999713578
 GameObject:
   m_ObjectHideFlags: 0
@@ -4763,6 +4743,109 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1016777108}
   m_Mesh: {fileID: 4300036, guid: c8ff7c7cc5dc17648b98e9cd6756bca7, type: 3}
+--- !u!1 &1019279401
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1019279405}
+  - component: {fileID: 1019279404}
+  - component: {fileID: 1019279403}
+  - component: {fileID: 1019279402}
+  m_Layer: 0
+  m_Name: FogVolumeCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1019279402
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1019279401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bef6df75502a394b8e5f87ee0b18263, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FogVolumeResolution: 184 X 114
+  RT_FogVolume: {fileID: 0}
+  RT_FogVolumeR: {fileID: 0}
+  _Downsample: 5
+  ThisCamera: {fileID: 1019279403}
+  SceneCamera: {fileID: 1990186286}
+  DepthMask:
+    serializedVersion: 2
+    m_Bits: 0
+  RT_Depth: {fileID: 0}
+  RT_DepthR: {fileID: 0}
+  upsampleDepthThreshold: 0.02
+  lowProfileDepthRT: []
+--- !u!20 &1019279403
+Camera:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1019279401}
+  m_Enabled: 0
+  serializedVersion: 2
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 1
+  far clip plane: 40000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 768
+  m_RenderingPath: 1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!114 &1019279404
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1019279401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff98ed9cca0747c45bfd307b759b2f55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SceneCamera: {fileID: 1990186286}
+  SecondaryCamera: {fileID: 1019279403}
+--- !u!4 &1019279405
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1019279401}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1019859649
 GameObject:
   m_ObjectHideFlags: 0
@@ -5167,9 +5250,8 @@ GameObject:
   - component: {fileID: 1141202912}
   - component: {fileID: 1141202914}
   - component: {fileID: 1141202913}
-  - component: {fileID: 1141202915}
   m_Layer: 5
-  m_Name: PlayerOneReticleCursor
+  m_Name: Reticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5226,19 +5308,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1141202911}
---- !u!114 &1141202915
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1141202911}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e14391e1e61e05d4cb2c492987e4b097, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 1000
-  clampRadius: 500
 --- !u!1 &1155544973
 GameObject:
   m_ObjectHideFlags: 0
@@ -6919,109 +6988,6 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
---- !u!1 &1547742368
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1547742372}
-  - component: {fileID: 1547742371}
-  - component: {fileID: 1547742370}
-  - component: {fileID: 1547742369}
-  m_Layer: 0
-  m_Name: FogVolumeCamera
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1547742369
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1547742368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bef6df75502a394b8e5f87ee0b18263, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FogVolumeResolution: 184 X 114
-  RT_FogVolume: {fileID: 0}
-  RT_FogVolumeR: {fileID: 0}
-  _Downsample: 5
-  ThisCamera: {fileID: 1547742370}
-  SceneCamera: {fileID: 1990186286}
-  DepthMask:
-    serializedVersion: 2
-    m_Bits: 0
-  RT_Depth: {fileID: 0}
-  RT_DepthR: {fileID: 0}
-  upsampleDepthThreshold: 0.02
-  lowProfileDepthRT: []
---- !u!20 &1547742370
-Camera:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1547742368}
-  m_Enabled: 0
-  serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
-  m_NormalizedViewPortRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  near clip plane: 1
-  far clip plane: 40000
-  field of view: 60
-  orthographic: 0
-  orthographic size: 5
-  m_Depth: 0
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 768
-  m_RenderingPath: 1
-  m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 0
-  m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
-  m_StereoConvergence: 10
-  m_StereoSeparation: 0.022
---- !u!114 &1547742371
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1547742368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff98ed9cca0747c45bfd307b759b2f55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SceneCamera: {fileID: 1990186286}
-  SecondaryCamera: {fileID: 1547742370}
---- !u!4 &1547742372
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1547742368}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 11
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1555892651
 GameObject:
   m_ObjectHideFlags: 0
@@ -7265,7 +7231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerID: 0
-  cursor: {fileID: 1141202915}
+  cursor: {fileID: 0}
   thrust: 0
 --- !u!114 &1569663745
 MonoBehaviour:
@@ -7278,27 +7244,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d75acd98a96b6c46a64cddb8e2ec4f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseForwardSpeed: 10
-  maxForwardSpeed: 500
-  speedIncreaseAmount: 1
-  speedDecreaseAmount: 2
+  baseForwardSpeed: 500
+  maxForwardSpeed: 1000
+  horizontalSpeed: 10
+  shipFollowSpeed: 7.5
+  speedIncreaseAmount: 100
+  speedDecreaseAmount: 200
   speedIncreaseFrequency: 0.5
   speedDecreaseFrequency: 0.5
-  outerZoneRotationSpeed: 0
-  midZoneRotationSpeed: 0
-  rotationSpeed: 3
-  cursorOffset: 100
-  clampRadius: 100
-  upAngle: {x: -45, y: 0, z: 0}
-  upRightAngle: {x: -30, y: 75, z: -30}
-  upLeftAngle: {x: -30, y: -75, z: 30}
-  downAngle: {x: 45, y: 0, z: 0}
-  downRightAngle: {x: 30, y: 75, z: -30}
-  downLeftAngle: {x: 30, y: -75, z: 30}
-  rightAngle: {x: 0, y: 75, z: -30}
-  leftAngle: {x: 0, y: -75, z: 30}
-  deadzone: 0
-  clampValue: 90
+  rotationSpeed: 100
+  cursorClampX: 30
+  cursorClampYMin: 15
+  cursorClampYMax: 20
+  xClamp: 35
+  yClamp: 15
+  zClamp: 35
 --- !u!54 &1569663746
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9821,7 +9781,7 @@ MonoBehaviour:
   ShowBilateralEdge: 0
   USMode: 1
   ThisCamera: {fileID: 1990186286}
-  _FogVolumeCamera: {fileID: 1547742369}
+  _FogVolumeCamera: {fileID: 1019279402}
   upsampleDepthThreshold: 0.00857
   HDR: 1
   TAA: 0

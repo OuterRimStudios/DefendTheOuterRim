@@ -6,38 +6,25 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Variables")]
-    public float baseForwardSpeed;
-    public float maxForwardSpeed;
+    public float baseForwardSpeed = 500f;
+    public float maxForwardSpeed = 1000f;
+    public float horizontalSpeed = 10f;
+    public float shipFollowSpeed = 7.5f;
 
-    public float speedIncreaseAmount;
-    public float speedDecreaseAmount;
+    public float speedIncreaseAmount = 100f;
+    public float speedDecreaseAmount = 200f;
 
-    public float speedIncreaseFrequency;
-    public float speedDecreaseFrequency;
+    public float speedIncreaseFrequency = .5f;
+    public float speedDecreaseFrequency = .5f;
 
-
-    [Space, Header("Rotations")]
-
-    public float outerZoneRotationSpeed;
-    public float midZoneRotationSpeed;
-	public float rotationSpeed;
-
-    public float cursorOffset;
-    public float clampRadius = 100;
-
-    public Vector3 upAngle = new Vector3(-22.5f, 0,0);
-    public Vector3 upRightAngle = new Vector3(-22.5f, 22.5f, -22.5f);
-    public Vector3 upLeftAngle = new Vector3(-22.5f, -22.5f, 22.5f);
-
-    public Vector3 downAngle = new Vector3(22.5f, 0, -0);
-    public Vector3 downRightAngle = new Vector3(22.5f, 22.5f, -22.5f);
-    public Vector3 downLeftAngle = new Vector3(22.5f, -22.5f, 22.5f);
-
-    public Vector3 rightAngle = new Vector3(0, 22.5f, -22.5f);
-    public Vector3 leftAngle = new Vector3(0, -22.5f, 22.5f);
-
-    [Space]
-    public float deadzone;
+    [Space, Header("Rotation Variables")]
+    public float rotationSpeed = 100f;
+    public float cursorClampX = 30f;
+    public float cursorClampYMin = 15f;
+    public float cursorClampYMax = 20f;
+    public float xClamp = 25f;
+    public float yClamp = 25f;
+    public float zClamp = 25f;
 
     bool increasingSpeed;
     bool decreasingSpeed;
@@ -51,10 +38,15 @@ public class PlayerMovement : MonoBehaviour
     private Quaternion qTo;
 
 	bool playerOne;
-
-	public float clampValue = 35f;
     Camera mainCam;
 	GameObject cursor;
+
+    float rotationX;
+    float rotationY;
+    float rotationZ;
+
+    float moveX;
+    float moveY;
 
     void Start()
     {
@@ -67,49 +59,43 @@ public class PlayerMovement : MonoBehaviour
 
 		cursor = transform.Find ("Cursor").gameObject;
 		cursor.transform.parent = null;
-
     }
 
     public void Move(Vector2 cursorVector, bool thrust, bool hasMouse)
     {
+        cursor.transform.position = new Vector3(cursor.transform.position.x, cursor.transform.position.y, transform.position.z);
+
         if (!hasMouse)
         {
-            float moveX = cursorVector.x * speed * Time.deltaTime;
-            float moveY = cursorVector.y * speed * Time.deltaTime;
+            moveX = cursorVector.x * (horizontalSpeed * 5) * Time.deltaTime;
+            moveY = cursorVector.y * (horizontalSpeed * 5) * Time.deltaTime;
             cursor.transform.position += new Vector3(moveX, moveY, 0f);
+
+            ControllerRotate(cursorVector);
         }
         else
         {
-            Vector3 mousePos = Input.mousePosition;
-            float moveX = mainCam.ScreenToWorldPoint(mousePos).x;
-            float moveY = mainCam.ScreenToWorldPoint(mousePos).y;
-            mousePos.z = 10;
-            cursor.transform.position = mainCam.ScreenToWorldPoint(mousePos);
+            moveX = cursorVector.x * (horizontalSpeed) * Time.deltaTime;
+            moveY = cursorVector.y * (horizontalSpeed) * Time.deltaTime;
+            cursor.transform.position += new Vector3(moveX, moveY, 0f);
+
+            MouseRotate(cursorVector);
         }
 
-        //transform.LookAt (cursor.transform.position);
+        cursor.transform.position = new Vector3(Mathf.Clamp(cursor.transform.position.x, -cursorClampX, cursorClampX),
+            Mathf.Clamp(cursor.transform.position.y, -cursorClampYMin, cursorClampYMax), cursor.transform.position.z);
+
+        //Vector3 cursorPos = new Vector3(moveX, moveY, 0);
+        //Vector3 newPos = cursor.transform.position + cursorPos;
+        //Vector3 offset = newPos - initialPos;
+        //cursor.transform.position = initialPos + Vector3.ClampMagnitude(offset, cursorClampRadius);
+
         Vector3 targetPos = new Vector3(cursor.transform.position.x, cursor.transform.position.y, transform.position.z);
-        transform.position = Vector3.Lerp(transform.position, targetPos, speed * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, targetPos, shipFollowSpeed * Time.deltaTime);
 
+        transform.localEulerAngles = new Vector3(-rotationX, rotationY, -rotationZ);
 
-        //		Vector3 targetRot = cursor.transform.position - transform.position;
-        //		Quaternion rotation = Quaternion.LookRotation (targetRot);
-        //
-        //		transform.rotation = rotation;
-
-
-
-
-
-        //if (!playerOne)
-        //{
-        //    //Vector3 newPos = transform.position + new Vector3(cursorVector.x, cursorVector.y, 0f);
-        //    Vector3 playerOnePos = PlayerWrangler.GetPlayer(0).transform.position;
-        //    Vector3 offset = new Vector3(5, 5, 0) + playerOnePos;
-        //    transform.position = playerOnePos + Vector3.ClampMagnitude(offset, clampRadius);
-        //}
-        //else
-        //rb.velocity = transform.forward * speed * Time.deltaTime;
+       // rb.velocity = Vector3.forward * speed * Time.deltaTime;
 
         if (thrust && !increasingSpeed && speed < maxForwardSpeed)
         {
@@ -121,50 +107,40 @@ public class PlayerMovement : MonoBehaviour
             decreasingSpeed = true;
             StartCoroutine(ChangeSpeed(-speedDecreaseAmount, speedDecreaseFrequency));
         }
-
-        Rotate(cursorVector);
     }
 
-    void Rotate(Vector2 cursorVector)
-	{
-		Vector3 screenSpace = mainCam.WorldToScreenPoint(cursor.transform.position);
-		if (screenSpace.x > Screen.width / .4f || screenSpace.x < Screen.width / .6f || screenSpace.y > Screen.height / .4f || screenSpace.y < Screen.height / .6f) return;
+    void ControllerRotate(Vector2 cursorVector)
+    {
+        rotationX = Mathf.Lerp(rotationX, 0, .1f);
+        rotationX += cursorVector.y * (rotationSpeed * 15) * Time.deltaTime;
+        rotationX = Mathf.Clamp(rotationX, -xClamp, xClamp);
 
-		float newAngle = Vector3.Angle(mainCam.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)) + new Vector3(0,mainCam.transform.position.y,0), new Vector3(cursor.transform.position.x, cursor.transform.position.y, 0));
-        //
+        rotationY = Mathf.Lerp(rotationY, 0, .1f);
+        rotationY += cursorVector.x * (rotationSpeed * 15) * Time.deltaTime;
+        rotationY = Mathf.Clamp(rotationY, -yClamp, yClamp);
 
-        if (screenSpace.y > Screen.height / 2f)
+        rotationZ = Mathf.Lerp(rotationZ, 0, .1f);
+        rotationZ += cursorVector.x * (rotationSpeed * 15) * Time.deltaTime;
+        rotationZ = Mathf.Clamp(rotationZ, -zClamp, zClamp);
+    }
+
+    void MouseRotate(Vector2 cursorVector)
+    {
+        if(cursorVector == Vector2.zero)
         {
-            if (newAngle <= 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 80 && newAngle > 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upRightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 100 && newAngle > 80)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 165 && newAngle > 100)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(upLeftAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 180)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
+            rotationX = Mathf.Lerp(rotationX, 0, .1f);
+            rotationY = Mathf.Lerp(rotationY, 0, .1f);
+            rotationZ = Mathf.Lerp(rotationZ, 0, .1f);
         }
-        else if (screenSpace.y < Screen.height / 2f)
-        {
-            if (newAngle <= 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 80 && newAngle > 15)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downRightAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 100 && newAngle > 80)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 165 && newAngle > 100)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(downLeftAngle), rotationSpeed * Time.deltaTime);
-            else if (newAngle <= 180)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(leftAngle), rotationSpeed * Time.deltaTime);
-        }
-        else
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
-
-        // if (newAngle > -cursorOffset && newAngle < cursorOffset && newAngle > -cursorOffset && newAngle < cursorOffset)
-        // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, rotationSpeed * Time.deltaTime);
-
+        
+        rotationX += cursorVector.y * rotationSpeed * Time.deltaTime;
+        rotationX = Mathf.Clamp(rotationX, -xClamp, xClamp);
+        
+        rotationY += cursorVector.x * rotationSpeed * Time.deltaTime;
+        rotationY = Mathf.Clamp(rotationY, -yClamp, yClamp);
+        
+        rotationZ += cursorVector.x * rotationSpeed * Time.deltaTime;
+        rotationZ = Mathf.Clamp(rotationZ, -zClamp, zClamp);
     }
 
     IEnumerator ChangeSpeed(float amount, float frequency)
