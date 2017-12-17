@@ -1,5 +1,4 @@
-﻿
-public enum EFogVolumeLightType
+﻿public enum EFogVolumeLightType
 {
     None = 0,
     FogVolumePointLight,

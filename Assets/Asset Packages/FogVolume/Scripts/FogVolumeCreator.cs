@@ -44,27 +44,32 @@ public class FogVolumeCreator : Editor
         }
     }
 
-    [MenuItem("GameObject/Create Other/Fog Volume Point Light")]
-    [MenuItem("Fog Volume/Create/Fog Volume Point Light")]
+
+    //=============================================================================================
+    // L I G H T S
+    //=============================================================================================
+
+    [MenuItem("GameObject/Create Other/Fog Volume Light/Fog Volume Point Light")]
+    [MenuItem("Fog Volume/Create Light/Fog Volume Point Light")]
     public static void CreateFogVolumePointLight()
     {
         var fogVolumeLight = new GameObject("FogVolumePointLight");
         var light = fogVolumeLight.AddComponent<FogVolumeLight>();
         light.IsPointLight = true;
-        light.IsAddedToNormalLight = true;
+        light.IsAddedToNormalLight = false;
     }
 
-    [MenuItem("GameObject/Create Other/Fog Volume Spot Light")]
-    [MenuItem("Fog Volume/Create/Fog Volume Spot Light")]
+    [MenuItem("GameObject/Create Other/Fog Volume Light/Fog Volume Spot Light")]
+    [MenuItem("Fog Volume/Create Light/Fog Volume Spot Light")]
     public static void CreateFogVolumeSpotLight()
     {
         var fogVolumeLight = new GameObject("FogVolumeSpotLight");
         var light = fogVolumeLight.AddComponent<FogVolumeLight>();
         light.IsPointLight = false;
-        light.IsAddedToNormalLight = true;
+        light.IsAddedToNormalLight = false;
     }
 
-    [MenuItem("Fog Volume/Create/Fog Volume Directional Light")]
+    [MenuItem("Fog Volume/Create Light/Fog Volume Directional Light")]
     public static void AutoCreateFogVolumeDirectionalLight()
     {
         var lights = FindObjectsOfType<Light>();
@@ -87,14 +92,14 @@ public class FogVolumeCreator : Editor
         }
     }
 
-    [MenuItem("Fog Volume/Create/Fog Volume Directional Light", true)]
+    [MenuItem("Fog Volume/Create Light/Fog Volume Directional Light", true)]
     public static bool EnableCreateFogVolumeDirectionalLight()
     {
         return FindObjectOfType<FogVolumeDirectionalLight>() == null &&
                FindObjectOfType<FogVolume>() != null;
     }
-    [MenuItem("GameObject/Create Other/Normal Point Light")]
-    [MenuItem("Fog Volume/Create/Normal Point Light")]
+    [MenuItem("GameObject/Create Other/Fog Volume Light/Normal Point Light")]
+    [MenuItem("Fog Volume/Create Light/Normal Point Light")]
     public static void CreateNormalPointLight()
     {
         var normalPointLight = new GameObject("Point light");
@@ -105,8 +110,8 @@ public class FogVolumeCreator : Editor
         fvLight.IsAddedToNormalLight = true;
     }
 
-    [MenuItem("GameObject/Create Other/Normal Spot Light")]
-    [MenuItem("Fog Volume/Create/Normal Spot Light")]
+    [MenuItem("GameObject/Create Other/Fog Volume Light/Normal Spot Light")]
+    [MenuItem("Fog Volume/Create Light/Normal Spot Light")]
     public static void CreateNormalSpotLight()
     {
         var normalPointLight = new GameObject("Spot light");
@@ -115,6 +120,64 @@ public class FogVolumeCreator : Editor
         var fvLight = normalPointLight.AddComponent<FogVolumeLight>();
         fvLight.IsPointLight = false;
         fvLight.IsAddedToNormalLight = true;
+    }
+
+
+    //=============================================================================================
+    // P R I M I T I V E S
+    //=============================================================================================
+
+    [MenuItem("Fog Volume/Create Primitive/Fog Volume Primitive Box")]
+    [MenuItem("GameObject/Create Other/Fog Volume Primitive/Box")]
+    static public void CreateFogVolumePrimitiveBox()
+    {
+        GameObject FogVolumePrimitive = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //Icon stuff
+        //Texture Icon = Resources.Load("FogVolumePrimitiveIcon") as Texture;
+        //Icon.hideFlags = HideFlags.HideAndDontSave;
+        // var editorGUI = typeof(EditorGUIUtility);
+        // var bindingFlags = BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic;
+        //var args = new object[] { FogVolumePrimitive, Icon };
+        //editorGUI.InvokeMember("SetIconForObject", bindingFlags, null, null, args);
+
+        FogVolumePrimitive.name = "Fog Volume Primitive Box";
+
+        FogVolumePrimitive.GetComponent<BoxCollider>().isTrigger = true;
+
+        FogVolumePrimitive.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        FogVolumePrimitive.GetComponent<Renderer>().receiveShadows = false;
+        FogVolumePrimitive.GetComponent<Renderer>().reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+        FogVolumePrimitive.GetComponent<Renderer>().lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+        Selection.activeObject = FogVolumePrimitive;
+        if (UnityEditor.SceneView.currentDrawingSceneView) UnityEditor.SceneView.currentDrawingSceneView.MoveToView(FogVolumePrimitive.transform);
+        FogVolumePrimitive.AddComponent<FogVolumePrimitive>();
+    }
+
+
+    [MenuItem("Fog Volume/Create Primitive/Fog Volume Primitive Sphere")]
+    [MenuItem("GameObject/Create Other/Fog Volume Primitive/Sphere")]
+    static public void CreateFogVolumePrimitiveSphere()
+    {
+        GameObject FogVolumePrimitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //Icon stuff
+        //Texture Icon = Resources.Load("FogVolumePrimitiveIcon") as Texture;
+        //Icon.hideFlags = HideFlags.HideAndDontSave;
+        // var editorGUI = typeof(EditorGUIUtility);
+        // var bindingFlags = BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic;
+        //var args = new object[] { FogVolumePrimitive, Icon };
+        //editorGUI.InvokeMember("SetIconForObject", bindingFlags, null, null, args);
+
+        FogVolumePrimitive.name = "Fog Volume Primitive Sphere";
+
+        FogVolumePrimitive.GetComponent<SphereCollider>().isTrigger = true;
+
+        FogVolumePrimitive.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        FogVolumePrimitive.GetComponent<Renderer>().receiveShadows = false;
+        FogVolumePrimitive.GetComponent<Renderer>().reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+        FogVolumePrimitive.GetComponent<Renderer>().lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+        Selection.activeObject = FogVolumePrimitive;
+        if (UnityEditor.SceneView.currentDrawingSceneView) UnityEditor.SceneView.currentDrawingSceneView.MoveToView(FogVolumePrimitive.transform);
+        FogVolumePrimitive.AddComponent<FogVolumePrimitive>();
     }
 }
 #endif

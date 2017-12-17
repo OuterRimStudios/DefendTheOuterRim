@@ -29,6 +29,7 @@ public class PlayerInput : MonoBehaviour
     private bool initialized;
 
     PlayerMovement playerMovement;
+    PlayerAnimator playerAnimator;
 
     private void Awake()
     {
@@ -45,6 +46,7 @@ public class PlayerInput : MonoBehaviour
     void GetReferences()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        playerAnimator = GetComponent<PlayerAnimator>();
         playerMovement.playerID = playerID;
     }
 
@@ -57,7 +59,16 @@ public class PlayerInput : MonoBehaviour
 
         //cursor.MoveCursor(cursorVector.x, cursorVector.y, player.controllers.hasMouse);
         playerMovement.Move(cursorVector, thrust, player.controllers.hasMouse);
+        playerAnimator.PlayerMovement(cursorVector.x, cursorVector.y);
+        playerAnimator.PlayerAcceleration(thrust);
 
+        if (cursorVector == Vector3.zero)
+            playerAnimator.IsIdle(true);
+        else
+            playerAnimator.IsIdle(false);
+
+        if (fire)
+            playerAnimator.Fire();
 
         //print("Player ID: " + playerID + ". ReticleX: " + player.GetAxis("ReticleX"));
         //print("Player ID: " + playerID + ". ReticleY: " + player.GetAxis("ReticleY"));
@@ -72,7 +83,7 @@ public class PlayerInput : MonoBehaviour
         //print("Player ID: " + playerID + ". Pause: " + player.GetAxis("Pause"));
         //print("Player ID: " + playerID + ". Back: " + player.GetAxis("Back"));
         //print("Player ID: " + playerID + ". Confirm: " + player.GetAxis("Confirm"));
-}
+    }
 
     void RecieveInput()
     {
@@ -85,7 +96,7 @@ public class PlayerInput : MonoBehaviour
         else
             raidialActive = false;
 
-        //thrust = player.GetButton("Thrust");
+        thrust = player.GetButton("Thrust");
         fire = player.GetButton("Fire");
         aim = player.GetButton("Aim");
 

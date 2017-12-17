@@ -55,8 +55,18 @@ sampler2D	LightshaftTex;
 	uniform float4x4			_PrimitivesTransform[20];
 	uniform half	_PrimitiveEdgeSoftener;
 	uniform float4 _PrimitivePosition[20],
-		_PrimitiveScale[20];
+		_PrimitiveScale[20], _PrimitiveData[20];
 	int _PrimitiveCount = 0;
+
+// Smaller than 1.0f -> BoxCollider.
+// Larger than 1.0f and smaller than 2.0f -> SphereCollider.
+#define _PrimitiveShapeType(i) _PrimitiveData[i].x 
+
+// Smaller than 1.0f -> Additive.
+// Larger than 1.0f and smaller than 2.0f -> Subtractive.
+#define _PrimitiveActionType(i) _PrimitiveData[i].y
+
+
 #endif
 
 const static int MaxVisibleLights = 64;

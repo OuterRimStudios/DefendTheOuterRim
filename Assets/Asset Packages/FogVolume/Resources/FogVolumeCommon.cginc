@@ -63,6 +63,20 @@ float udBox(float3 p, float3 b)
 {
 	return length(max(abs(p) - b, 0.0));
 }
+
+float PrimitiveShape(fixed ShapeType, float3 p, float3 s)
+{
+	if (ShapeType <= 1.0f)//Box
+		return sdBox(p, s);
+	else
+
+	if (ShapeType <= 2.0f)//Sphere
+		return sdSphere(p, s);
+	
+	else return .0f;
+}
+
+
 float nrand(float2 ScreenUVs)
 {
 	return frac(sin(ScreenUVs.x * 12.9898 + ScreenUVs.y * 78.233) * 43758.5453);

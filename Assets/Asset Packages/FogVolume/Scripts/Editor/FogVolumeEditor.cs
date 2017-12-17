@@ -513,10 +513,10 @@ public class FogVolumeEditor : Editor
                 GUILayout.BeginHorizontal("toolbarbutton");
                 _target.EnableDistanceFields = EditorGUILayout.Toggle("Enable Primitives", _target.EnableDistanceFields);
                 
-                if (_target.EnableDistanceFields && _target.PrimitivesList.Count>0)
-                    EditorGUILayout.LabelField(_target.PrimitivesList.Count + " primitives in use");
+                if (_target.EnableDistanceFields && _target.GetTotalPrimitiveCount() > 0)
+                    EditorGUILayout.LabelField(_target.GetVisiblePrimitiveCount() + " primitives visible | " + _target.GetTotalPrimitiveCount() + " primitives in volume");
                 else
-                    EditorGUILayout.LabelField("0 primitives in use");
+                    EditorGUILayout.LabelField("0 primitives visible | 0 primitives in volume");
                 GUILayout.EndHorizontal();
 
                 if (_target.EnableDistanceFields)
@@ -529,12 +529,14 @@ public class FogVolumeEditor : Editor
                     _target._PrimitiveEdgeSoftener = EditorGUILayout.Slider(VariableField("Softness", "Softens the primitive shape"), _target._PrimitiveEdgeSoftener, 1, 100);
                     _target._PrimitiveCutout = EditorGUILayout.Slider(VariableField("Cutout", "Cuts the distance field with the primitive boundaries"), _target._PrimitiveCutout, 0, .99999f);
 
+                    /*
                     var PrimitivesList = serializedObject.FindProperty("PrimitivesList");
                     GUILayout.BeginVertical("box");
                     EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(PrimitivesList, true);
                     EditorGUI.indentLevel--;
                     EditorGUILayout.EndVertical();
+                    */
                 }
 
             }
@@ -760,8 +762,8 @@ public class FogVolumeEditor : Editor
             GUILayout.BeginVertical("box");
             EditorGUILayout.LabelField("Description",EditorStyles.boldLabel);
             _target.Description = EditorGUILayout.TextArea(_target.Description, GUILayout.MaxWidth(300));
-            EditorGUILayout.LabelField("Version 3.2.1p3");
-            EditorGUILayout.LabelField("Release date: November 2017");
+            EditorGUILayout.LabelField("Version 3.2.1p4");
+            EditorGUILayout.LabelField("Release date: December 2017");
             EditorGUILayout.LabelField("Fog type: " + _target._FogType.ToString());
            
             #region Camera

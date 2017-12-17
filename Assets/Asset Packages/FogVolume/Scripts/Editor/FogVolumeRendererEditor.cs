@@ -142,7 +142,7 @@ public class FogVolumeRendererEditor : Editor
         }
 
         EditorGUI.EndChangeCheck();
-        EditorGUILayout.HelpBox("Fog Volume 3.2.1p3 November 2017", MessageType.None);
+        EditorGUILayout.HelpBox("Fog Volume 3.2.1p4 December 2017", MessageType.None);
         GUILayout.EndVertical();
         if (GUI.changed)
         {

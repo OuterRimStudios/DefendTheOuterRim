@@ -21,14 +21,6 @@ public class FogVolumeLightManager : MonoBehaviour
 
     public bool AlreadyUsesTransformForPoI { get { return m_pointOfInterestTf != null; } }
 
-#if UNITY_EDITOR
-    private void Update()
-    {
-        hideFlags = HideFlags.HideInInspector;
-    }
-#endif
-
-
     // Very slow and garbage allocating. Only call this once!
     public void FindLightsInScene()
     {
@@ -36,17 +28,16 @@ public class FogVolumeLightManager : MonoBehaviour
         VisibleLightCount = 0;
         m_lights.Clear();
         m_lightsInFrustum.Clear();
-        for (var i = 0; i < MaxLightCount; i++)
+        for (int i = 0; i < MaxLightCount; i++)
         {
             m_lights.Add(new LightData());
             m_lightsInFrustum.Add(new LightData());
         }
 
-
-        var lights = FindObjectsOfType<FogVolumeLight>();
-        for (var i = 0; i < lights.Length; i++)
+        FogVolumeLight[] lights = FindObjectsOfType<FogVolumeLight>();
+        for (int i = 0; i < lights.Length; i++)
         {
-            var unityLight = lights[i].GetComponent<Light>();
+            Light unityLight = lights[i].GetComponent<Light>();
             if (unityLight != null)
             {
                 switch (unityLight.type)
@@ -88,21 +79,22 @@ public class FogVolumeLightManager : MonoBehaviour
         VisibleLightCount = 0;
         m_lights.Clear();
         m_lightsInFrustum.Clear();
-        for (var i = 0; i < MaxLightCount; i++)
+        for (int i = 0; i < MaxLightCount; i++)
         {
             m_lights.Add(new LightData());
             m_lightsInFrustum.Add(new LightData());
         }
 
         if (m_boxCollider == null) { m_boxCollider = gameObject.GetComponent<BoxCollider>(); }
-        var boundingBox = m_boxCollider.bounds;
+        Bounds boundingBox = m_boxCollider.bounds;
 
-        var lights = FindObjectsOfType<FogVolumeLight>();
-        for (var i = 0; i < lights.Length; i++)
+        FogVolumeLight[] lights = FindObjectsOfType<FogVolumeLight>();
+        for (int i = 0; i < lights.Length; i++)
         {
-            if (boundingBox.Contains(lights[i].gameObject.transform.position))
+            if (boundingBox.Intersects(new Bounds(lights[i].gameObject.transform.position,
+                                                  Vector3.one * LightInVolumeBoundsSize)))
             {
-                var unityLight = lights[i].GetComponent<Light>();
+                Light unityLight = lights[i].GetComponent<Light>();
                 if (unityLight != null)
                 {
                     switch (unityLight.type)
@@ -157,10 +149,10 @@ public class FogVolumeLightManager : MonoBehaviour
         Assert.IsTrue(CurrentLightCount < MaxLightCount,
                       "The maximum number of lights is already reached!");
 
-        var index = _FindFirstFreeLight();
+        int index = _FindFirstFreeLight();
         if (index != InvalidIndex)
         {
-            var data = m_lights[index];
+            LightData data = m_lights[index];
             CurrentLightCount++;
             data.LightType = EFogVolumeLightType.FogVolumePointLight;
             data.Transform = _light.transform;
@@ -193,16 +185,17 @@ public class FogVolumeLightManager : MonoBehaviour
         Assert.IsTrue(CurrentLightCount < MaxLightCount,
                       "The maximum number of lights is already reached!");
 
-        var index = _FindFirstFreeLight();
+        int index = _FindFirstFreeLight();
         if (index != InvalidIndex)
         {
-            var data = m_lights[index];
+            LightData data = m_lights[index];
             CurrentLightCount++;
             data.LightType = EFogVolumeLightType.FogVolumeSpotLight;
             data.Transform = _light.transform;
             data.Light = null;
             data.FogVolumeLight = _light;
-            var center = data.Transform.position + data.Transform.forward * data.FogVolumeLight.Range * 0.5f;
+            Vector3 center = data.Transform.position +
+                             data.Transform.forward * data.FogVolumeLight.Range * 0.5f;
             data.Bounds = new Bounds(center,
                                      Vector3.one * data.FogVolumeLight.Range *
                                      (0.75f + data.FogVolumeLight.Angle * 0.03f));
@@ -228,10 +221,10 @@ public class FogVolumeLightManager : MonoBehaviour
         Assert.IsTrue(CurrentLightCount < MaxLightCount,
                       "The maximum number of lights is already reached!");
 
-        var index = _FindFirstFreeLight();
+        int index = _FindFirstFreeLight();
         if (index != InvalidIndex)
         {
-            var data = m_lights[index];
+            LightData data = m_lights[index];
             CurrentLightCount++;
             data.LightType = EFogVolumeLightType.PointLight;
             data.Transform = _light.transform;
@@ -261,16 +254,17 @@ public class FogVolumeLightManager : MonoBehaviour
         Assert.IsTrue(CurrentLightCount < MaxLightCount,
                       "The maximum number of lights is already reached!");
 
-        var index = _FindFirstFreeLight();
+        int index = _FindFirstFreeLight();
         if (index != InvalidIndex)
         {
-            var data = m_lights[index];
+            LightData data = m_lights[index];
             CurrentLightCount++;
             data.LightType = EFogVolumeLightType.SpotLight;
             data.Transform = _light.transform;
             data.Light = _light;
             data.FogVolumeLight = null;
-            var center = data.Transform.position + data.Transform.forward * data.Light.range * 0.5f;
+            Vector3 center = data.Transform.position +
+                             data.Transform.forward * data.Light.range * 0.5f;
             data.Bounds = new Bounds(center,
                                      Vector3.one * data.Light.range *
                                      (0.75f + data.Light.spotAngle * 0.03f));
@@ -288,19 +282,20 @@ public class FogVolumeLightManager : MonoBehaviour
      *  
      *  @param _lightToRemove The light that will be removed from this manager.
      *  
-     *  @return True if the light was found inside the manager and removes successfully.
+     *  @return True if the light was found inside the manager and removed successfully.
      *  @return False if the light was not found an thus not removed.
      * 
      *********************************************************************************************/
     public bool RemoveLight(Transform _lightToRemove)
     {
-        var count = m_lights.Count;
-        for (var i = 0; i < count; i++)
+        int count = m_lights.Count;
+        for (int i = 0; i < count; i++)
         {
-            if (ReferenceEquals(m_lights[i].Transform, _lightToRemove.transform))
+            if (ReferenceEquals(m_lights[i].Transform, _lightToRemove))
             {
                 m_lights[i].LightType = EFogVolumeLightType.None;
                 CurrentLightCount--;
+                return true;
             }
         }
 
@@ -315,9 +310,10 @@ public class FogVolumeLightManager : MonoBehaviour
      *  shaders.
      * 
      *********************************************************************************************/
-    public void ManualUpdate()
+    public void ManualUpdate(ref Plane[] _frustumPlanes)
     {
-        m_camera = (m_fogVolumeData != null) ? m_fogVolumeData.GameCamera : null;
+        FrustumPlanes = _frustumPlanes;
+        m_camera = m_fogVolumeData != null ? m_fogVolumeData.GameCamera : null;
         if (m_camera == null) { return; }
 
         if (m_boxCollider == null) { m_boxCollider = m_fogVolume.GetComponent<BoxCollider>(); }
@@ -336,19 +332,20 @@ public class FogVolumeLightManager : MonoBehaviour
     public void OnDrawGizmos()
     {
         hideFlags = HideFlags.HideInInspector;
+        if (m_camera == null) { return; }
         if (!DrawDebugData) { return; }
 
-        var tempColor = Gizmos.color;
+        Color tempColor = Gizmos.color;
 
         Gizmos.color = Color.green;
-        for (var i = 0; i < VisibleLightCount; i++)
+        for (int i = 0; i < VisibleLightCount; i++)
         {
             Gizmos.DrawWireCube(m_lightsInFrustum[i].Bounds.center,
                                 m_lightsInFrustum[i].Bounds.size);
         }
 
         Gizmos.color = Color.magenta;
-        var currentMatrix = Gizmos.matrix;
+        Matrix4x4 currentMatrix = Gizmos.matrix;
         Gizmos.matrix = Matrix4x4.TRS(m_camera.transform.position,
                                       m_camera.transform.rotation,
                                       Vector3.one);
@@ -380,7 +377,8 @@ public class FogVolumeLightManager : MonoBehaviour
     /**
      *  @brief Sets the point of interest to a fixed position.
      *  
-     *  @param _pointOfInterest The point that 
+     *  @param _pointOfInterest The point that will be used for prioritizing which lights need to 
+     *                          be rendered.
      * 
      *********************************************************************************************/
     public void SetPointOfInterest(Vector3 _pointOfInterest)
@@ -462,7 +460,7 @@ public class FogVolumeLightManager : MonoBehaviour
             m_lights = new List<LightData>(MaxLightCount);
             m_lightsInFrustum = new List<LightData>(MaxLightCount);
 
-            for (var i = 0; i < MaxLightCount; i++)
+            for (int i = 0; i < MaxLightCount; i++)
             {
                 m_lights.Add(new LightData());
                 m_lightsInFrustum.Add(new LightData());
@@ -481,6 +479,13 @@ public class FogVolumeLightManager : MonoBehaviour
         DrawDebugData = false;
     }
 
+
+    public void SetFrustumPlanes(ref Plane[] _frustumPlanes) { FrustumPlanes = _frustumPlanes; }
+
+#if UNITY_EDITOR
+    private void Update() { hideFlags = HideFlags.HideInInspector; }
+#endif
+
     //=============================================================================================
     /**
      *  @brief Updates the axis aligned bounding boxes of all registered lights.
@@ -488,12 +493,14 @@ public class FogVolumeLightManager : MonoBehaviour
      *********************************************************************************************/
     private void _UpdateBounds()
     {
-        var count = m_lights.Count;
-        for (var i = 0; i < count; i++)
+        int count = m_lights.Count;
+        for (int i = 0; i < count; i++)
         {
-            if (m_lights[i].LightType == EFogVolumeLightType.None) { continue; }
+            LightData data = m_lights[i];
 
-            var data = m_lights[i];
+            if (data.LightType == EFogVolumeLightType.None) { continue; }
+
+
             switch (data.LightType)
             {
                 case EFogVolumeLightType.None:
@@ -509,8 +516,8 @@ public class FogVolumeLightManager : MonoBehaviour
                 }
                 case EFogVolumeLightType.SpotLight:
                 {
-                    var center = data.Transform.position +
-                                 data.Transform.forward * data.Light.range * 0.5f;
+                    Vector3 center = data.Transform.position +
+                                     data.Transform.forward * data.Light.range * 0.5f;
                     data.Bounds = new Bounds(center,
                                              Vector3.one * data.Light.range *
                                              m_pointLightCullSizeMultiplier * 1.25f);
@@ -525,8 +532,8 @@ public class FogVolumeLightManager : MonoBehaviour
                 }
                 case EFogVolumeLightType.FogVolumeSpotLight:
                 {
-                    var center = data.Transform.position +
-                                 data.Transform.forward * data.FogVolumeLight.Range * 0.5f;
+                    Vector3 center = data.Transform.position +
+                                     data.Transform.forward * data.FogVolumeLight.Range * 0.5f;
                     data.Bounds = new Bounds(center,
                                              Vector3.one * data.FogVolumeLight.Range *
                                              m_pointLightCullSizeMultiplier * 1.25f);
@@ -548,8 +555,8 @@ public class FogVolumeLightManager : MonoBehaviour
     {
         if (CurrentLightCount < MaxLightCount)
         {
-            var count = m_lights.Count;
-            for (var i = 0; i < count; i++)
+            int count = m_lights.Count;
+            for (int i = 0; i < count; i++)
             {
                 if (m_lights[i].LightType == EFogVolumeLightType.None) { return i; }
             }
@@ -566,17 +573,16 @@ public class FogVolumeLightManager : MonoBehaviour
      *********************************************************************************************/
     private void _FindLightsInFrustum()
     {
-        FrustumPlanes = GeometryUtility.CalculateFrustumPlanes(m_camera);
         m_inFrustumCount = 0;
-        var CameraPos = m_camera.gameObject.transform.position;
-        var count = m_lights.Count;
-        for (var i = 0; i < count; i++)
+        Vector3 CameraPos = m_camera.gameObject.transform.position;
+        int count = m_lights.Count;
+        for (int i = 0; i < count; i++)
         {
             if (m_lights[i].Transform == null) { m_lights[i].LightType = EFogVolumeLightType.None; }
 
             if (m_lights[i].LightType == EFogVolumeLightType.None) { continue; }
 
-            var distanceToCamera = (m_lights[i].Transform.position - CameraPos).magnitude;
+            float distanceToCamera = (m_lights[i].Transform.position - CameraPos).magnitude;
             if (distanceToCamera > m_fogVolume.PointLightingDistance2Camera) { continue; }
 
             switch (m_lights[i].LightType)
@@ -608,10 +614,10 @@ public class FogVolumeLightManager : MonoBehaviour
 
             if (GeometryUtility.TestPlanesAABB(FrustumPlanes, m_lights[i].Bounds))
             {
-                var light = m_lights[i];
-                var lightPos = light.Transform.position;
+                LightData light = m_lights[i];
+                Vector3 lightPos = light.Transform.position;
                 light.SqDistance = (lightPos - m_pointOfInterest).sqrMagnitude;
-                light.Distance2Camera = (m_lights[i].Transform.position - CameraPos).magnitude;
+                light.Distance2Camera = (lightPos - CameraPos).magnitude;
                 m_lightsInFrustum[m_inFrustumCount++] = light;
 
                 if (light.FogVolumeLight != null)
@@ -642,15 +648,15 @@ public class FogVolumeLightManager : MonoBehaviour
      *********************************************************************************************/
     private void _SortLightsInFrustum()
     {
-        var finishedSorting = false;
+        bool finishedSorting = false;
         do
         {
             finishedSorting = true;
-            for (var i = 0; i < m_inFrustumCount - 1; i++)
+            for (int i = 0; i < m_inFrustumCount - 1; i++)
             {
                 if (m_lightsInFrustum[i].SqDistance > m_lightsInFrustum[i + 1].SqDistance)
                 {
-                    var tempData = m_lightsInFrustum[i];
+                    LightData tempData = m_lightsInFrustum[i];
                     m_lightsInFrustum[i] = m_lightsInFrustum[i + 1];
                     m_lightsInFrustum[i + 1] = tempData;
                     finishedSorting = false;
@@ -669,17 +675,17 @@ public class FogVolumeLightManager : MonoBehaviour
     private void _PrepareShaderArrays()
     {
         VisibleLightCount = 0;
-        for (var i = 0; i < MaxVisibleLights; i++)
+        for (int i = 0; i < MaxVisibleLights; i++)
         {
             if (i >= m_inFrustumCount) { break; }
 
-            var data = m_lightsInFrustum[i];
+            LightData data = m_lightsInFrustum[i];
 
             switch (data.LightType)
             {
                 case EFogVolumeLightType.FogVolumePointLight:
                 {
-                    var light = data.FogVolumeLight;
+                    FogVolumeLight light = data.FogVolumeLight;
                     m_lightPos[i] =
                             gameObject.transform.InverseTransformPoint(data.Transform.position);
                     m_lightRot[i] =
@@ -698,27 +704,26 @@ public class FogVolumeLightManager : MonoBehaviour
                 }
                 case EFogVolumeLightType.FogVolumeSpotLight:
                 {
-                    var light = data.FogVolumeLight;
+                    FogVolumeLight light = data.FogVolumeLight;
                     m_lightPos[i] =
                             gameObject.transform.InverseTransformPoint(data.Transform.position);
                     m_lightRot[i] =
                             gameObject.transform.InverseTransformVector(data.Transform.forward);
                     m_lightColor[i] = light.Color;
-                    m_lightData[i] = new Vector4(light.Intensity *
-                                                 m_fogVolume.PointLightsIntensity *
-                                                 (1.0f - Mathf.Clamp01(data.Distance2Camera /
-                                                                       m_fogVolume
-                                                                               .PointLightingDistance2Camera)
-                                                 ),
-                                                 light.Range / SpotLightRangeDivider,
-                                                 light.Angle,
-                                                 NoData);
+                    m_lightData[i] =
+                            new Vector4(light.Intensity * m_fogVolume.PointLightsIntensity *
+                                        (1.0f - Mathf.Clamp01(data.Distance2Camera / m_fogVolume
+                                                                      .PointLightingDistance2Camera)
+                                        ),
+                                        light.Range / SpotLightRangeDivider,
+                                        light.Angle,
+                                        NoData);
                     VisibleLightCount++;
                     break;
                 }
                 case EFogVolumeLightType.PointLight:
                 {
-                    var light = data.Light;
+                    Light light = data.Light;
                     m_lightPos[i] =
                             gameObject.transform.InverseTransformPoint(data.Transform.position);
                     m_lightRot[i] =
@@ -737,7 +742,7 @@ public class FogVolumeLightManager : MonoBehaviour
                 }
                 case EFogVolumeLightType.SpotLight:
                 {
-                    var light = data.Light;
+                    Light light = data.Light;
                     m_lightPos[i] =
                             gameObject.transform.InverseTransformPoint(data.Transform.position);
                     m_lightRot[i] =
@@ -807,6 +812,9 @@ public class FogVolumeLightManager : MonoBehaviour
 
     private const int MaxLightCount = 1000;
 
+    /// The assumed size of a light. Used by realtime search when searching for lights inside a FV.
+    private const float LightInVolumeBoundsSize = 5.0f;
+
     protected class LightData
     {
         public LightData()
@@ -816,6 +824,7 @@ public class FogVolumeLightManager : MonoBehaviour
             FogVolumeLight = null;
             Transform = null;
             SqDistance = 0.0f;
+            Distance2Camera = 0.0f;
             Bounds = new Bounds();
         }
 

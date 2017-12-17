@@ -18,62 +18,62 @@ float4 frag(v2f i) : SV_Target
 		discard;
 
 	//likely to resolve to a free modifier
-	if(tmin < 0)
+	if (tmin < 0)
 		tmin = 0;
 
 	float4 ScreenUVs = UNITY_PROJ_COORD(i.ScreenUVs);
 	float2 screenUV = ScreenUVs.xy / ScreenUVs.w;
 	float Depth = 0;
 
-	#if _FOG_LOWRES_RENDERER && !ExternalDepth
-		//low res
-		#ifdef FOG_VOLUME_STEREO_ON
-			//left eye
-			if (unity_CameraProjection[0][2] < 0)//lo estaba haciendo con unity_StereoEyeIndex, pero por algún motivo, no se entera
-			{
-				Depth = tex2D(RT_Depth, screenUV);
-			}
-			//right eye
-			else //if (unity_CameraProjection[0][2] > 0)
-			{
-				Depth = tex2Dlod(RT_DepthR, float4(screenUV, 0, 0));
-			}
-		#else
-			Depth = tex2Dlod(RT_Depth, float4(screenUV, 0, 0));
-		#endif
+#if _FOG_LOWRES_RENDERER && !ExternalDepth
+	//low res
+#ifdef FOG_VOLUME_STEREO_ON
+	//left eye
+	if (unity_CameraProjection[0][2] < 0)//lo estaba haciendo con unity_StereoEyeIndex, pero por algún motivo, no se entera
+	{
+		Depth = tex2D(RT_Depth, screenUV);
+	}
+	//right eye
+	else //if (unity_CameraProjection[0][2] > 0)
+	{
+		Depth = tex2Dlod(RT_DepthR, float4(screenUV, 0, 0));
+	}
+#else
+	Depth = tex2Dlod(RT_Depth, float4(screenUV, 0, 0));
+#endif
 
-		Depth = 1.0 / Depth;
+	Depth = 1.0 / Depth;
 
-		//#else
-		//#ifdef ExternalDepth 
-		//	 //injected from water asset
-		//	 float Depth = tex2D(_CustomCameraDepthTexture, screenUV).r;
-		//	 Depth = 1.0 / Depth;
-		//
-		//#else
-		//full res or Scene view
-		// float Depth = tex2D(_CameraDepthTexture, screenUV).r;
-		//	 Depth = LinearEyeDepth(Depth);
-		//#endif
-	#endif
+	//#else
+	//#ifdef ExternalDepth 
+	//	 //injected from water asset
+	//	 float Depth = tex2D(_CustomCameraDepthTexture, screenUV).r;
+	//	 Depth = 1.0 / Depth;
+	//
+	//#else
+	//full res or Scene view
+	// float Depth = tex2D(_CameraDepthTexture, screenUV).r;
+	//	 Depth = LinearEyeDepth(Depth);
+	//#endif
+#endif
 
 #ifdef ExternalDepth 
-	 //injected from water asset
-	 Depth = tex2D(_CustomCameraDepthTexture, screenUV).r;
-	 Depth = 1.0 / Depth;
+	//injected from water asset
+	Depth = tex2D(_CustomCameraDepthTexture, screenUV).r;
+	Depth = 1.0 / Depth;
 #else
 #if !_FOG_LOWRES_RENDERER
-	 //full res or Scene view
-	 Depth = tex2D(_CameraDepthTexture, screenUV).r;
-	 Depth = LinearEyeDepth(Depth);
+	//full res or Scene view
+	Depth = tex2D(_CameraDepthTexture, screenUV).r;
+	Depth = LinearEyeDepth(Depth);
 #endif
 #endif
-	 //return float4( Depth.xxx, 1);
+	//return float4( Depth.xxx, 1);
 	Depth = length(Depth / normalize(i.ViewPos).z);
 	float thickness = min(max(tmin, tmax), Depth) - min(min(tmin, tmax), Depth);
 	float Fog = thickness / _Visibility;
 
-	Fog = 1.0 - exp(-Fog);	
+	Fog = 1.0 - exp(-Fog);
 	//return Fog;
 	float4 Final = 0;
 	float3 Normalized_CameraWorldDir = normalize(i.Wpos - _WorldSpaceCameraPos);
@@ -86,7 +86,7 @@ float4 frag(v2f i) : SV_Target
 #if _FOG_VOLUME_NOISE || _FOG_GRADIENT	
 
 	half jitter = 1;
-	#ifdef JITTER
+#ifdef JITTER
 	jitter = remap_tri(nrand(ScreenUVs + frac(_Time.x)));
 
 	jitter = lerp(1, jitter, _jitter);
@@ -104,9 +104,9 @@ float4 frag(v2f i) : SV_Target
 	float4 Gradient = 1;
 	half Contact = 1;
 	half3 AmbientColor = 1;
-	
 
-	
+
+
 	half DistanceFade = 0;
 	half SphereDistance = 0;
 	half DetailCascade0 = 0;
@@ -142,13 +142,13 @@ float4 frag(v2f i) : SV_Target
 	float3  rd = normalize(rayDir);
 
 #ifdef SAMPLING_METHOD_ViewAligned
-	
+
 	float PlaneNdotRay = dot(rd, i.SliceNormal);
 	dt = _RayStep / abs(PlaneNdotRay);
 	t = dt - fmod(dot(r0, i.SliceNormal), _RayStep) / PlaneNdotRay;
 #endif
 
-	
+
 
 #ifdef JITTER
 	t *= jitter;
@@ -174,30 +174,46 @@ float4 frag(v2f i) : SV_Target
 #endif
 #endif
 		DistanceFade = saturate(DistanceFade / FadeDistance);
-		
+
 		DistanceFade = 1 - DistanceFade;
 		if (DistanceFade < .001) break;
-//#ifdef _COLLISION	
-		if(Collisions != 0)
+		//#ifdef _COLLISION	
+		if (Collisions != 0)
 		{
 			Contact = saturate((Depth - distance(VolumeSpaceCoords, i.LocalEyePos))*_SceneIntersectionSoftness);
 			if (Contact < .01)
 				break;
-//#endif
+			//#endif
 		}
 #ifdef DF
 
 		PrimitiveAccum = 0;
 		half3 p = 0;
-			for (int k = 0; k < _PrimitiveCount; k++)
+
+		//Additive primitives
+		for (int k = 0; k < _PrimitiveCount; k++)
+		{			
+			if (_PrimitiveActionType(k) <= 1.0f)
 			{
 				p = mul(_PrimitivesTransform[k], VolumeSpaceCoords - _PrimitivePosition[k]);
-				PrimitiveAccum = max(PrimitiveAccum, 1 - (udBox(p, _PrimitiveScale[k] * .5) + Constrain));
+				
+				PrimitiveAccum = max(PrimitiveAccum, 1 - (PrimitiveShape(_PrimitiveShapeType(k), p, _PrimitiveScale[k] * .5) + Constrain));
+			}			
+		}
+
+		//Subtractive primitives
+		for (int k = 0; k < _PrimitiveCount; k++)
+		{
+			if (_PrimitiveActionType(k) > 1.0f)
+			{
+				p = mul(_PrimitivesTransform[k], VolumeSpaceCoords - _PrimitivePosition[k]);
+				
+					PrimitiveAccum = min(PrimitiveAccum, (PrimitiveShape(_PrimitiveShapeType(k), p, _PrimitiveScale[k] * .5) + Constrain));
 			}
+		}
 
-
-			PrimitiveAccum=ContrastF(PrimitiveAccum * _PrimitiveEdgeSoftener, 1);
-		
+		//Final adjustments
+		PrimitiveAccum = ContrastF(PrimitiveAccum * _PrimitiveEdgeSoftener, 1);
 
 #endif
 
@@ -206,10 +222,10 @@ float4 frag(v2f i) : SV_Target
 		half2 GradientCoords = VolumeSpaceCoords.xy / (_BoxMax.xy - _BoxMin.xy) - .5f;
 		GradientCoords.y *= 0.95;//correct bottom. must check in the future what's wrong with the uv at the edges
 		GradientCoords.y -= 0.04;//3.1.1
-		//if(PrimitiveAccum>.99)
-		if(gain>0)
-		Gradient = tex2Dlod(_Gradient, half4(GradientCoords, 0, 0));
-		
+								 //if(PrimitiveAccum>.99)
+		if (gain>0)
+			Gradient = tex2Dlod(_Gradient, half4(GradientCoords, 0, 0));
+
 #endif	
 
 		VerticalGrad = (VolumeSpaceCoords.y / (_BoxMax.y - _BoxMin.y) + 0.5);
@@ -223,14 +239,14 @@ float4 frag(v2f i) : SV_Target
 		float DistanceCamera2VolumePoints = distance(_WorldSpaceCameraPos, VolumeSpaceCoordsWorldSpace);
 		float VolumeDepth = min(max(tmin, tmax), DistanceCamera2VolumePoints) - min(min(tmin, tmax), DistanceCamera2VolumePoints);
 		float VolumeDensity = DistanceCamera2VolumePoints - DistanceCamera2VolumeWalls;
-		VolumeFog = saturate(1 - exp( -VolumeDepth / _Visibility*5));
+		VolumeFog = saturate(1 - exp(-VolumeDepth / _Visibility * 5));
 		//VolumeFog= saturate(1 - exp(-VolumeRayDistanceTraveled / _Visibility));
-		
-		
+
+
 		VolumeFog.a *= Contact/**Gradient.a*/;// aquí hay que decidir si el gradiente se lo come o no
-	
+
 #endif
-								 
+
 		NoiseAtten = gain;
 		NoiseAtten *= DistanceFade;
 		NoiseAtten *= Contact;
@@ -247,7 +263,7 @@ float4 frag(v2f i) : SV_Target
 		NoiseAtten *= SphereDistance;
 
 #endif
-		
+
 
 
 		//TEXTURE SAMPLERS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,7 +292,7 @@ float4 frag(v2f i) : SV_Target
 		Cresta *= 10 * CoverageRGB.r;
 		NoiseAtten *= CoverageRGB.r;
 		NoiseAtten += CoverageRGB.r * 4 * CumulonimbusTop + Cresta;
-		
+
 #endif
 
 		if (Contact > 0 && NoiseAtten > 0 && PrimitiveAccum > _PrimitiveCutout)
@@ -293,7 +309,7 @@ float4 frag(v2f i) : SV_Target
 
 #if _FOG_VOLUME_NOISE && _FOG_GRADIENT
 			Noise = noise(NoiseCoordinates, DetailCascade0) * Gradient;
-			
+
 #endif
 
 
@@ -311,8 +327,8 @@ float4 frag(v2f i) : SV_Target
 
 		half d = Noise.a;//si se multiplica aquí añade cotraste
 
-		//half absorptionFactor = lerp(1, 20, Absorption);
-	
+						 //half absorptionFactor = lerp(1, 20, Absorption);
+
 
 		half Beers = exp(-d* absorptionFactor)* absorptionFactor;//la última multiplicación da contraste
 		half Powder = 1 - exp(-d * 2);
@@ -322,10 +338,10 @@ float4 frag(v2f i) : SV_Target
 		HeightGradientAtten = 1.0 - exp(-HeightGradientAtten);
 		absorption *= lerp(1,HeightGradientAtten, HeightAbsorption);
 #endif
-	
 
-	//	AmbientTerm = absorption;3.2
-		
+
+		//	AmbientTerm = absorption;3.2
+
 
 #else				
 		//AmbientTerm = 1;3.2
@@ -345,11 +361,11 @@ float4 frag(v2f i) : SV_Target
 				LambertTerm *= LambertTerm;
 				Lambert = lerp(1, LambertTerm, Noise.a*DirectLightingAmount*ContrastF(DetailCascade1 * 3, 2));
 				Lambert = max(0.0, Lambert);
-				
+
 			}
 		}
 #endif
-		AmbientColor=_AmbientColor.rgb;
+		AmbientColor = _AmbientColor.rgb;
 #ifndef SHADOW_PASS
 		AmbientTerm.rgb = _AmbientColor.rgb;
 #endif
@@ -357,34 +373,34 @@ float4 frag(v2f i) : SV_Target
 		UNITY_BRANCH
 			if (PROBES == 1) {
 				//#ifdef PROBES
-				
-					ProxyAmbient = ShadeSHPerPixel(i.worldNormal, 0, VolumeSpaceCoordsWorldSpace);				
-					AmbientTerm.rgb *= ProxyAmbient/* * _AmbientColor.rgb*/;
-					AmbientColor *= ProxyAmbient;
-				
+
+				ProxyAmbient = ShadeSHPerPixel(i.worldNormal, 0, VolumeSpaceCoordsWorldSpace);
+				AmbientTerm.rgb *= ProxyAmbient/* * _AmbientColor.rgb*/;
+				AmbientColor *= ProxyAmbient;
+
 
 			}
-		
-//#endif
+
+		//#endif
 		AmbientTerm *= absorption;//3.2
 #endif
 #if _SHADE
 		if (Noise.a > 0)
 			SelfShadows = Shadow(NoiseCoordinates, i, DetailCascade0, LightVector* ShadowShift, NoiseAtten);
-		
+
 #endif		
 		//3.1.10
 
 		HeightAtten = HeightGradient(VerticalGrad, _AmbientHeightAbsorptionMin, _AmbientHeightAbsorptionMax);
 		HeightAtten = saturate(1.0 - exp(-HeightAtten));
-		if(_AmbientHeightAbsorptionMin==-1 && _AmbientHeightAbsorptionMax==-1)//just to avoid adding one more shader variant
-		HeightAtten = 1;
+		if (_AmbientHeightAbsorptionMin == -1 && _AmbientHeightAbsorptionMax == -1)//just to avoid adding one more shader variant
+			HeightAtten = 1;
 		//AmbientTerm *= HeightAtten;3.2 ambient shouldn't be affected by this
 		SelfShadows *= HeightAtten;
 		//
 #if DIRECTIONAL_LIGHTING
 		float DirectionalLightingSample = 0;
-	//TODO	if (LightShafts > 0.1)
+		//TODO	if (LightShafts > 0.1)
 
 		if (NoiseAtten>0 && Noise.a>0)
 		{
@@ -392,7 +408,7 @@ float4 frag(v2f i) : SV_Target
 			for (int s = 0; s < DirectLightingShadowSteps; s++)
 			{
 				DirectionalLightingSamplingPosition += LightVector*DirectLightingShadowStepSize;
-				DirectionalLightingSample = noise(DirectionalLightingSamplingPosition, DetailCascade0).r ;
+				DirectionalLightingSample = noise(DirectionalLightingSamplingPosition, DetailCascade0).r;
 				DirectionalLightingAccum += DirectionalLightingSample/* / DirectLightingShadowSteps*/;
 			}
 			DirectionalLighting = DirectionalLightingAccum;
@@ -400,9 +416,9 @@ float4 frag(v2f i) : SV_Target
 		DirectionalLighting *= Noise.a;
 
 #endif
-	
+
 #if defined (_INSCATTERING)
-	
+
 #if ABSORPTION 
 		//lets diffuse LambertTerm according to density/absorption
 
@@ -424,11 +440,11 @@ float4 frag(v2f i) : SV_Target
 		half HG = Henyey(Normalized_CameraWorldDir, L, InscatteringShape);
 		HG *= InscatteringDistanceClamp * Contact;
 		Phase = _InscatteringColor.rgb * _InscatteringIntensity * HG * Gradient.xyz * _LightColor.rgb;//3.2;
-		
-	
 
 
-		Phase *= absorption ;
+
+
+		Phase *= absorption;
 
 
 #endif			
@@ -441,14 +457,14 @@ float4 frag(v2f i) : SV_Target
 
 		LdotV = saturate(LdotV);
 		LdotV -= .5;
-	
-//#ifdef ABSORPTION
-//		half HaloDensityTerm = absorption;
-//#else
-		half HaloDensityTerm =  Noise.a;
-//#endif
+
+		//#ifdef ABSORPTION
+		//		half HaloDensityTerm = absorption;
+		//#else
+		half HaloDensityTerm = Noise.a;
+		//#endif
 		half mip = saturate(Noise.a * 12) * _HaloAbsorption * (1 - HaloDensityTerm);
-		
+
 		half4 Halo = 0;
 		if (LdotV >0)
 		{
@@ -457,14 +473,14 @@ float4 frag(v2f i) : SV_Target
 			Halo.b = tex2Dlod(_LightHaloTexture, float4(0, LdotV * 1.2, 0, mip)/**_HaloOpticalDispersion*/).r;
 			Halo.rgb *= _HaloIntensity;
 			Halo.rgb *= Halo.a;
-			Halo.rgb *=  HaloDensityTerm  * (1.0 - HaloDensityTerm);
-			Halo.rgb *= 1-mip/12;
-			
-			
-		
-			
+			Halo.rgb *= HaloDensityTerm  * (1.0 - HaloDensityTerm);
+			Halo.rgb *= 1 - mip / 12;
+
+
+
+
 			Halo.rgb *= LdotV;
-			
+
 
 		}
 		else
@@ -472,21 +488,21 @@ float4 frag(v2f i) : SV_Target
 
 #endif
 
-		
+
 		OpacityTerms = Noise.a*Contact;
 #if DIRECTIONAL_LIGHTING
 		//Shadow Color
 		DirectionalLighting /= LightExtinctionColor.rgb;
-		
+
 		DirectionalLighting = DirectionalLighting* DirectLightingShadowDensity;
 		DirectionalLighting = exp(-DirectionalLighting);
 		Phase *= DirectionalLighting;
 #endif
 		//half3 LightTerms =  exp(-DirectionalLighting) *  OpacityTerms;
 		half3 LightTerms = OpacityTerms * AmbientTerm.rgb * DirectionalLighting;//3.2
-//#ifdef VOLUMETRIC_SHADOWS
+																				//#ifdef VOLUMETRIC_SHADOWS
 		UNITY_BRANCH
-			if (VOLUMETRIC_SHADOWS==1) {
+			if (VOLUMETRIC_SHADOWS == 1) {
 				// added casting for ps4
 				half2 shadowUVs = (mul((float3x3)_ShadowCameraProjection, (float3)(VolumeSpaceCoordsWorldSpace - _ShadowCameraPosition)).xy + _ShadowCameraSize) / (_ShadowCameraSize*2.0f);
 
@@ -513,18 +529,18 @@ float4 frag(v2f i) : SV_Target
 				//3.2
 				//LightTerms *= lerp(_AmbientColor.rgb, 1, VolumeShadow);//previous 3.2
 				//LightTerms *= lerp(AmbientTerm.rgb, 1, VolumeShadow);//3.2 test
-				
+
 			}
-			
-//#endif
+
+		//#endif
 
 
 		//Phase *= LightTerms;//atten with shadowing//3.2 comment
 		Phase *= OpacityTerms;//3.2
-		
-		//LightTerms *= lerp(_AmbientColor.rgb, 1, absorption);//previous 3.2
-		//LightTerms *= lerp(AmbientTerm.rgb, 1, absorption);//3.2 test
-		
+
+							  //LightTerms *= lerp(_AmbientColor.rgb, 1, absorption);//previous 3.2
+							  //LightTerms *= lerp(AmbientTerm.rgb, 1, absorption);//3.2 test
+
 
 #ifdef VOLUME_SHADOWS
 
@@ -541,40 +557,40 @@ float4 frag(v2f i) : SV_Target
 		LightShafts = LightShafts*lerp(50,1,_Cutoff);
 		LightShafts = 1 - saturate(LightShafts);
 		//LightShafts *= _LightColor.rgb;3.2
-			#if defined (_INSCATTERING)
-					Phase *= LightShafts;
-			#endif
-			#ifdef HALO
-					Halo.rgb *= LightShafts;	// changed to rgb for ps4				
-			#endif
+#if defined (_INSCATTERING)
+		Phase *= LightShafts;
+#endif
+#ifdef HALO
+		Halo.rgb *= LightShafts;	// changed to rgb for ps4				
+#endif
 
 #endif
 
-	
-		
+
+
 #ifdef VOLUME_SHADOWS
 		LightTerms *= LightShafts;
 
 #endif
-		
+
 		LightTerms *= Lambert;
-		
+
 #ifdef _SHADE
 		float3 SelfShadowsColor = lerp(_SelfShadowColor.rgb * AmbientTerm.rgb, 1.0, SelfShadows);//3.2 replaced ambient color with AmbientTerm
 		LightTerms *= SelfShadowsColor;
-		Phase*= SelfShadowsColor;
+		Phase *= SelfShadowsColor;
 #endif
 		//3.1.10
 		LightTerms *= HeightAtten;
 		Phase *= HeightAtten;
 		//
-		
+
 
 #ifdef VOLUME_FOG
 		half3 VolumetricFogVolor = _FogColor.rgb;
-//#ifdef AMBIENT_AFFECTS_FOG_COLOR
-	if(AMBIENT_AFFECTS_FOG_COLOR)	VolumetricFogVolor *= AmbientColor;
-//#endif
+		//#ifdef AMBIENT_AFFECTS_FOG_COLOR
+		if (AMBIENT_AFFECTS_FOG_COLOR)	VolumetricFogVolor *= AmbientColor;
+		//#endif
 #ifdef VOLUME_SHADOWS
 		LightTerms = lerp(LightTerms, VolumetricFogVolor * Gradient.rgb * (LightShafts + _AmbientColor.a), VolumeFog.a);
 #else
@@ -584,28 +600,28 @@ float4 frag(v2f i) : SV_Target
 
 
 #if defined (_VOLUME_FOG_INSCATTERING)
-		half VolumeFogInscatteringDistanceClamp =saturate((VolumeRayDistanceTraveled - VolumeFogInscatteringStartDistance) / VolumeFogInscatteringTransitionWideness );
+		half VolumeFogInscatteringDistanceClamp = saturate((VolumeRayDistanceTraveled - VolumeFogInscatteringStartDistance) / VolumeFogInscatteringTransitionWideness);
 		half3 VolumeFogPhase = Henyey(Normalized_CameraWorldDir, L, VolumeFogInscatteringAnisotropy);
 		VolumeFogPhase *= Contact;
 		VolumeFogPhase *= VolumeFogInscatteringDistanceClamp;
 		VolumeFogPhase *= VolumeFogInscatteringColor.rgb * VolumeFogInscatteringIntensity * Gradient.xyz;
 		VolumeFogPhase *= saturate(1 - Noise.a * VolumeFogInscatteringIntensity/*pushin' proportionaly to intensity*/);
 		half3 FogInscatter = 0;
-		
-		UNITY_BRANCH
-		if(FOG_TINTS_INSCATTER==1)
-			FogInscatter= VolumeFog.a *VolumetricFogVolor * VolumeFogPhase * _LightColor.rgb;
-		//3.2 
-		else
-			FogInscatter = VolumeFog.a *VolumetricFogVolor * VolumeFogPhase * _LightColor.rgb + VolumeFog.a * VolumeFogPhase * _LightColor.rgb;
 
-		#ifdef VOLUME_SHADOWS		
-			FogInscatter *= LightShafts;
-		#endif
-				
 		UNITY_BRANCH
-		if (VOLUMETRIC_SHADOWS == 1) 
-			FogInscatter *= VolumeShadow;
+			if (FOG_TINTS_INSCATTER == 1)
+				FogInscatter = VolumeFog.a *VolumetricFogVolor * VolumeFogPhase * _LightColor.rgb;
+		//3.2 
+			else
+				FogInscatter = VolumeFog.a *VolumetricFogVolor * VolumeFogPhase * _LightColor.rgb + VolumeFog.a * VolumeFogPhase * _LightColor.rgb;
+
+#ifdef VOLUME_SHADOWS		
+		FogInscatter *= LightShafts;
+#endif
+
+		UNITY_BRANCH
+			if (VOLUMETRIC_SHADOWS == 1)
+				FogInscatter *= VolumeShadow;
 
 		LightTerms += FogInscatter;
 #endif
@@ -616,19 +632,19 @@ float4 frag(v2f i) : SV_Target
 #if defined(_FOG_GRADIENT)
 		LightTerms *= Gradient.rgb;
 #endif	
-//#ifdef PROBES
-		
+		//#ifdef PROBES
+
 		//LightTerms *= ProxyAmbient*5;//maybe not
-//#endif
+		//#endif
 		LightTerms += Phase;
-		
+
 		//Multiply by LambertTerm and color before additive stuff
 		LightTerms *= _Color.rgb;
 		LightTerms *= _LightExposure;//new in 3.1.1
 		LightTerms += AmbientTerm*Noise.a;//multiplicando para no afectar a la niebla
 #if SHADER_API_GLCORE || SHADER_API_D3D11 || SHADER_API_METAL
 #if ATTEN_METHOD_1 || ATTEN_METHOD_2 || ATTEN_METHOD_3
-		
+
 		if (DetailCascade2>0)
 		{
 			for (int k = 0; k < _LightsCount; k++)
@@ -637,16 +653,16 @@ float4 frag(v2f i) : SV_Target
 				if (PointLightRange > .99) {
 					if (_LightData[k].z >= 0.0)
 					{
-					
+
 						PointLightAccum +=
 							(Noise.a + VolumeFog.a)*SpotLight(
-								_LightPositions[k].xyz,								
+								_LightPositions[k].xyz,
 								VolumeSpaceCoords,
 								_LightRange(k),
-								_LightColors[k], 
+								_LightColors[k],
 								_LightIntensity(k),
 								_LightRotations[k],
-								
+
 								_LightSpotAngle(k),
 								_LightColors[k].w, i) * Contact;
 					}
@@ -654,10 +670,10 @@ float4 frag(v2f i) : SV_Target
 					{
 						PointLightAccum +=
 							(Noise.a + VolumeFog.a)*PointLight(
-								_LightPositions[k].xyz, 
-								VolumeSpaceCoords, 
+								_LightPositions[k].xyz,
+								VolumeSpaceCoords,
 								_LightRange(k),
-								_LightColors[k], 
+								_LightColors[k],
 								_LightIntensity(k),
 								//1,
 								i) * Contact;
@@ -667,11 +683,11 @@ float4 frag(v2f i) : SV_Target
 			half atten = saturate(PointLightAccum.a);
 			if (atten > 0)
 			{
-			
+
 				PointLightsFinal = PointLightAccum;
 			}
 		}
-		
+
 
 #endif
 #endif
@@ -681,9 +697,9 @@ float4 frag(v2f i) : SV_Target
 
 		//LightTerms += Halo.rgb;
 		//3.1.10
-		LightTerms *= (1+Halo.rgb);
+		LightTerms *= (1 + Halo.rgb);
 #endif
-		
+
 #ifdef DEBUG
 		if (_DebugMode == DEBUG_ITERATIONS)
 		{
@@ -708,22 +724,22 @@ float4 frag(v2f i) : SV_Target
 			LightTerms = OpacityTerms * FogInscatter;
 		}
 #endif
-		
+
 #endif
-		
+
 		OpacityTerms *= _PushAlpha;
 		//FinalNoise.a = saturate(FinalNoise.a);
-		
+
 		FinalNoise = FinalNoise + float4(LightTerms, OpacityTerms)  * (1.0 - FinalNoise.a);
-		
-	
+
+
 		if (FinalNoise.a > .999)break;//KILL'EM ALL if its already opaque, don't do anything else
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////LOOP END
 #ifdef DEBUG
 
-	if (_DebugMode == DEBUG_INSCATTERING 
-		|| _DebugMode == DEBUG_VOLUMETRIC_SHADOWS 
+	if (_DebugMode == DEBUG_INSCATTERING
+		|| _DebugMode == DEBUG_VOLUMETRIC_SHADOWS
 		|| _DebugMode == DEBUG_VOLUME_FOG_INSCATTER_CLAMP
 		|| _DebugMode == DEBUG_VOLUME_FOG_PHASE)
 	{
@@ -752,7 +768,7 @@ float4 frag(v2f i) : SV_Target
 	Final = float4(_Color.rgb + _InscatteringColor.rgb * _InscatteringIntensity * Inscattering, _Color.a);
 
 #else
-	
+
 	Final = _Color;
 #endif	
 #if ATTEN_METHOD_1 || ATTEN_METHOD_2 || ATTEN_METHOD_3
@@ -762,9 +778,9 @@ float4 frag(v2f i) : SV_Target
 #endif
 #ifdef ColorAdjust
 
-	
+
 	Final.rgb = lerp(Final.rgb, pow(max((Final.rgb + Offset), 0), 1 / Gamma), Final.a);
-	
+
 #if _TONEMAP			
 	Final.rgb = ToneMap(Final.rgb, Exposure);
 #endif
@@ -772,20 +788,20 @@ float4 frag(v2f i) : SV_Target
 #if !_FOG_VOLUME_NOISE && !_FOG_GRADIENT
 	Final.a *= (Fog * _Color.a);
 #endif
-	
+
 	if (IsGammaSpace())
 		Final.rgb = pow(Final.rgb, 1 / 2.2);
-	
-	
+
+
 	Final.a = saturate(Final.a);
 
 	Final.rgb = SafeHDR(Final.rgb);
-	
-	#ifdef Enviro_Integration
-		float4 EnviroFog = TransparentFog(Final, i.Wpos, screenUV, Depth);
-		EnviroFog.a = EnviroFog.a * Final.a;
-		Final = EnviroFog;
-	#endif
+
+#ifdef Enviro_Integration
+	float4 EnviroFog = TransparentFog(Final, i.Wpos, screenUV, Depth);
+	EnviroFog.a = EnviroFog.a * Final.a;
+	Final = EnviroFog;
+#endif
 
 	return Final;
 

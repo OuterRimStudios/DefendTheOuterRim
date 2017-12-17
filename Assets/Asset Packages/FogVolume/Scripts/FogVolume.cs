@@ -42,6 +42,26 @@
      * Better behaviour of surrogates in Mac
      * Better CPU perf
      * Updated VR showroom (now mostly event driven, using SteamVR's libs, improved VR start location -counter transformed start into meat space-, etc)
+
+          ----[ v 3.2.1p4 ] ----
+     * Primitives: Added sphere & subtractive mode
+     * Added FogVolumePrimitiveManager which supports up to 20 primitives that can be visible at the same time.
+     * The total amount of supported primitives is the same as for lights and is set to 1000. Only the 20 closest to the camera will be taken into account.
+     * Fixed a bug where removing a light would always return false.
+     * Overhauled the FogVolume menu to make it more accessible.
+     * Reduced garbage allocation for version before Unity 2017.3 (GeometryUtility.CalculateFrustumPlanes()).
+     * FogVolumeLightManager methods that are meant to be accessed by the user are:
+        - AddSimulatedSpotLight()
+        - AddSimulatedPointLight()
+        - AddPointLight()
+        - AddSpotLight()
+        - RemoveLight()
+        - SetPointOfInterest()
+     * FogVolumePrimitiveManager methods that are meant to be accessed by the user are:
+        - AddPrimitiveBox()
+        - AddPrimitiveSphere()
+        - RemovePrimitie()
+        - SetPointOfInterest()
      
 /*TODO
  * Lightshaft distance atten
@@ -275,7 +295,7 @@ public class FogVolume : MonoBehaviour
     public bool SceneCollision = true;
     public bool ShowPrimitives = false;
     public bool EnableDistanceFields = false;
-    public List<FogVolumePrimitive> PrimitivesList;
+    //public List<FogVolumePrimitive> PrimitivesList;
     public float _PrimitiveEdgeSoftener = 1;
     public float _PrimitiveCutout = 0;
     public float Constrain = 0;
@@ -691,6 +711,7 @@ public class FogVolume : MonoBehaviour
     void OnEnable()
     {
         m_lightManager = null;
+        m_primitiveManager = null;
 
         SetIcon();
         //Low resolution renderer setup
@@ -760,7 +781,9 @@ public class FogVolume : MonoBehaviour
 		#endif
 #endregion
 
+        if (FrustumPlanes == null) { FrustumPlanes = new Plane[6]; }
         _InitializeLightManagerIfNeccessary();
+        _InitializePrimitiveManagerIfNeccessary();
     }
     public float PointLightCPUMaxDistance = 1;
     GameObject PointLightsCameraGO = null;
@@ -872,6 +895,7 @@ public class FogVolume : MonoBehaviour
         //  print("x maximo: " + FogVolumeXmax + " x minimo: " + FogVolumeXmin);
         return result;
     }
+    /*
     Vector4[] PrimitivePositions = new Vector4[20];
     Transform[] PrimitivePositionsTransform = new Transform[20];
     public Vector4[] GetPrimitivesPositions()
@@ -928,6 +952,7 @@ public class FogVolume : MonoBehaviour
         }
         return Scales;
     }
+    */
     //   Vector4[] PointlightPositions = new Vector4[256];
     //  Transform[] PointlightPositionsTransform = new Transform[256];
     //public Vector4[] GetPointLightPositions()
@@ -1009,6 +1034,7 @@ public class FogVolume : MonoBehaviour
     //        }
     //    return PointlightRange;
     //}
+    /*
     void PrimitivesVisible()
     {
         int index = 0;
@@ -1031,7 +1057,9 @@ public class FogVolume : MonoBehaviour
             index++;
         }
     }
+    */
     public bool PrimitivesRealTimeUpdate = true;
+    /*
     public FogVolumePrimitive[] Primitives;
     void ClearPrimitiveList()
     {
@@ -1063,9 +1091,11 @@ public class FogVolume : MonoBehaviour
 
         PrimitivesVisible();
     }
+    */
     void OnDisable()
     {
         m_lightManager = null;
+        m_primitiveManager = null;
     }
 
     static public void Wireframe(GameObject obj, bool Enable)
@@ -1178,6 +1208,8 @@ public class FogVolume : MonoBehaviour
         if (PointLightCullSizeMultiplier < 1.0f) { PointLightCullSizeMultiplier = 1.0f; }
         m_lightManager.SetPointLightCullSizeMultiplier(PointLightCullSizeMultiplier);
 
+        if (m_primitiveManager != null) { m_primitiveManager.SetVisibility(ShowPrimitives); }
+
         if (GameCamera != null)
         {
             //if ((GameCamera.nearClipPlane != m_cameraNearClipPlane) ||
@@ -1186,6 +1218,7 @@ public class FogVolume : MonoBehaviour
             //   m_cameraNearClipPlane = GameCamera.nearClipPlane;
             //    m_cameraFarClipPlane = GameCamera.farClipPlane;
             FrustumPlanes = GeometryUtility.CalculateFrustumPlanes(GameCamera);
+
             // }
 
 
@@ -1365,16 +1398,17 @@ public class FogVolume : MonoBehaviour
             }
             Profiler.EndSample();
             Profiler.BeginSample("FogVolume Primitives update");
-            if (PrimitivesList != null)
-                if (PrimitivesList.Count > 0 && EnableDistanceFields)
+            if (m_primitiveManager != null)
+                if (m_primitiveManager.CurrentPrimitiveCount > 0 && EnableDistanceFields)
                 {
                     FogMaterial.SetFloat("Constrain", Constrain);
-                    FogMaterial.SetVectorArray("_PrimitivePosition", GetPrimitivesPositions());
-                    FogMaterial.SetVectorArray("_PrimitiveScale", GetPrimitivesScale());
-                    FogMaterial.SetInt("_PrimitiveCount", PrimitivesList.Count);
-                    FogMaterial.SetMatrixArray("_PrimitivesTransform", GetPrimitivesTransform());
+                    FogMaterial.SetVectorArray("_PrimitivePosition", m_primitiveManager.GetPrimitivePositionArray());
+                    FogMaterial.SetVectorArray("_PrimitiveScale", m_primitiveManager.GetPrimitiveScaleArray());
+                    FogMaterial.SetInt("_PrimitiveCount", m_primitiveManager.VisiblePrimitiveCount);
+                    FogMaterial.SetMatrixArray("_PrimitivesTransform", m_primitiveManager.GetPrimitiveTransformArray());
                     FogMaterial.SetFloat("_PrimitiveEdgeSoftener", 1 / _PrimitiveEdgeSoftener);
                     FogMaterial.SetFloat("_PrimitiveCutout", _PrimitiveCutout);
+                    FogMaterial.SetVectorArray("_PrimitiveData", m_primitiveManager.GetPrimitiveDataArray());
                 }
             Profiler.EndSample();
             Profiler.BeginSample("FogVolume PARAMETERS");
@@ -1592,7 +1626,7 @@ public class FogVolume : MonoBehaviour
                     m_lightManager.SetPointOfInterest(_FogVolumeData.GameCamera.transform);
                 }
 
-                m_lightManager.ManualUpdate();
+                m_lightManager.ManualUpdate(ref FrustumPlanes);
             }
             FogMaterial.SetInt("_LightsCount", GetVisibleLightCount());
         }
@@ -1601,7 +1635,27 @@ public class FogVolume : MonoBehaviour
         //     FogMaterial.SetInt("_LightsCount", 0);
 
         if (EnableDistanceFields)
-            CreatePrimitiveList();
+        {
+            _InitializePrimitiveManagerIfNeccessary();
+            if (m_primitiveManager != null)
+            {
+                if (PrimitivesRealTimeUpdate)
+                {
+                    m_lightManager.Deinitialize();
+                    m_primitiveManager.FindPrimitivesInFogVolume();
+
+                }
+                if (m_lightManager.AlreadyUsesTransformForPoI == false)
+                {
+                    m_primitiveManager.SetPointOfInterest(_FogVolumeData.GameCamera.transform);
+                }
+
+                m_primitiveManager.ManualUpdate(ref FrustumPlanes);
+            }
+            FogMaterial.SetInt("_PrimitivesCount", GetVisiblePrimitiveCount());
+        } 
+        else { _DeinitializePrimitiveManagerIfNeccessary(); }
+            //CreatePrimitiveList();
 
         //3.1.7 maybe not!
         //else
@@ -1845,7 +1899,7 @@ public class FogVolume : MonoBehaviour
                 else
                     FogMaterial.DisableKeyword("SPHERICAL_FADE");
 
-                if (PrimitivesList != null && PrimitivesList.Count > 0 && EnableDistanceFields)
+                if (m_primitiveManager != null && m_primitiveManager.VisiblePrimitiveCount > 0 && EnableDistanceFields)
                     FogMaterial.EnableKeyword("DF");
                 else
                     FogMaterial.DisableKeyword("DF");
@@ -2070,7 +2124,6 @@ public class FogVolume : MonoBehaviour
             {
                 m_lightManager.FindLightsInScene();
             }
-
         }
     }
 
@@ -2094,5 +2147,40 @@ public class FogVolume : MonoBehaviour
         return 0;
     }
 
+
+    private FogVolumePrimitiveManager m_primitiveManager;
+
+    private void _InitializePrimitiveManagerIfNeccessary()
+    {
+        if (m_primitiveManager == null)
+        {
+            m_primitiveManager = GetComponent<FogVolumePrimitiveManager>();
+            if (m_primitiveManager == null)
+            {
+                m_primitiveManager = gameObject.AddComponent<FogVolumePrimitiveManager>();
+            }
+            m_primitiveManager.Initialize();
+            m_primitiveManager.FindPrimitivesInFogVolume();
+        }
+    }
+
+    private void _DeinitializePrimitiveManagerIfNeccessary()
+    {
+        if (m_primitiveManager != null) { m_primitiveManager.Deinitialize(); }
+    }
+
+    public int GetVisiblePrimitiveCount()
+    {
+        if (m_primitiveManager != null) { return m_primitiveManager.VisiblePrimitiveCount; }
+
+        return 0;
+    }
+
+    public int GetTotalPrimitiveCount()
+    {
+        if (m_primitiveManager != null) { return m_primitiveManager.CurrentPrimitiveCount; }
+
+        return 0;
+    }
 }
 

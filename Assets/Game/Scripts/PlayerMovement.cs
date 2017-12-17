@@ -109,7 +109,8 @@ public class PlayerMovement : MonoBehaviour
 
         transform.localEulerAngles = new Vector3(-rotationX, rotationY, -rotationZ);
 
-        //rb.velocity = Vector3.forward * speed * Time.deltaTime;
+        // rb.velocity = Vector3.forward * speed * Time.deltaTime;
+        
 
         if (thrust && !increasingSpeed && speed < maxForwardSpeed)
         {
