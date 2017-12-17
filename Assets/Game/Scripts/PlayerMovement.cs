@@ -70,58 +70,74 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(Vector2 cursorVector, bool thrust, bool hasMouse)
     {
+       
         if (!hasMouse)
         {
-            moveX = cursorVector.x * (horizontalSpeed * 5) * Time.deltaTime;
-            moveY = cursorVector.y * (horizontalSpeed * 5) * Time.deltaTime;
-            cursor.transform.position += new Vector3(moveX, moveY, 0f);
+        //    moveX = cursorVector.x * (horizontalSpeed * 5) * Time.deltaTime;
+        //    moveY = cursorVector.y * (horizontalSpeed * 5) * Time.deltaTime;
+        //    cursor.transform.position += new Vector3(moveX, moveY, 0f);
 
-            ControllerRotate(cursorVector);
+        //    ControllerRotate(cursorVector);
         }
         else
         {
-            if (cursorVector.x == 0 && camController.panVectors[playerID].x != 0)
-                moveX = camController.panVectors[playerID].x * (horizontalSpeed * 5) * Time.deltaTime;
-            else
-                moveX = cursorVector.x * (horizontalSpeed) * Time.deltaTime;
+            //if (cursorVector.x == 0 && camController.panVectors[playerID].x != 0)
+        //        moveX = camController.panVectors[playerID].x * (horizontalSpeed * 5) * Time.deltaTime;
+        //    else
+        //        moveX = cursorVector.x * (horizontalSpeed) * Time.deltaTime;
 
-            if (cursorVector.y == 0 && camController.panVectors[playerID].y != 0)
-                moveY = camController.panVectors[playerID].y * (horizontalSpeed * 5) * Time.deltaTime;
-            else
-                moveY = cursorVector.y * (horizontalSpeed) * Time.deltaTime;
-            cursor.transform.position += new Vector3(moveX, moveY, 0f);
+        //    if (cursorVector.y == 0 && camController.panVectors[playerID].y != 0)
+        //        moveY = camController.panVectors[playerID].y * (horizontalSpeed * 5) * Time.deltaTime;
+        //    else
+        //        moveY = cursorVector.y * (horizontalSpeed) * Time.deltaTime;
+        //    cursor.transform.position += new Vector3(moveX, moveY, 0f);
 
             MouseRotate(cursorVector);
         }
 
-        float dist = (cursor.transform.position.z - mainCam.transform.position.z);
+        mainCam.transform.Translate(mainCam.transform.forward * speed * Time.deltaTime);
 
-        float cursorLeftClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMin, 0, dist)).x;
-        float cursorRightClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMax, 0, dist)).x;
-        float cursorUpClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMax, dist)).y;
-        float cursorDownClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMin, dist)).y;
+       // mainCam.transform.localEulerAngles = new Vector3(-rotationX, rotationY, -rotationZ);
+        mainCam.transform.Rotate(new Vector3(-cursorVector.y * rotationSpeed * Time.deltaTime, cursorVector.x * rotationSpeed * Time.deltaTime, 0));
 
-        cursor.transform.position = new Vector3(Mathf.Clamp(cursor.transform.position.x, cursorLeftClamp, cursorRightClamp),
-            Mathf.Clamp(cursor.transform.position.y, cursorDownClamp, cursorUpClamp), cursor.transform.position.z);
+        //transform.LookAt(mainCam.transform.forward * 100);
+        Vector3 rotation = mainCam.transform.rotation.eulerAngles;
+       // rotation = mainCam.transform.TransformDirection(rotation);
 
-        Vector3 targetPos = new Vector3(cursor.transform.position.x, cursor.transform.position.y, transform.position.z);
-        transform.position = Vector3.Lerp(transform.position, targetPos, shipFollowSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Euler(rotation);
 
-        transform.localEulerAngles = new Vector3(-rotationX, rotationY, -rotationZ);
+        transform.Translate(mainCam.transform.forward * speed * Time.deltaTime);
+        //transform.position = transform.position - camController.offset;
+        transform.position = Vector3.Lerp(transform.position, mainCam.transform.position - camController.offset, speed * Time.deltaTime);
 
-        // rb.velocity = Vector3.forward * speed * Time.deltaTime;
-        
+        //float dist = (cursor.transform.position.z - mainCam.transform.position.z);
 
-        if (thrust && !increasingSpeed && speed < maxForwardSpeed)
-        {
-            increasingSpeed = true;
-            StartCoroutine(ChangeSpeed(speedIncreaseAmount, speedIncreaseFrequency));
-        }
-        else if (!thrust && !decreasingSpeed && speed > baseForwardSpeed)
-        {
-            decreasingSpeed = true;
-            StartCoroutine(ChangeSpeed(-speedDecreaseAmount, speedDecreaseFrequency));
-        }
+        //float cursorLeftClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMin, 0, dist)).x;
+        //float cursorRightClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMax, 0, dist)).x;
+        //float cursorUpClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMax, dist)).y;
+        //float cursorDownClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMin, dist)).y;
+
+        //cursor.transform.position = new Vector3(Mathf.Clamp(cursor.transform.position.x, cursorLeftClamp, cursorRightClamp),
+        //    Mathf.Clamp(cursor.transform.position.y, cursorDownClamp, cursorUpClamp), cursor.transform.position.z);
+
+        //Vector3 targetPos = new Vector3(cursor.transform.position.x, cursor.transform.position.y, transform.position.z);
+        //transform.position = Vector3.Lerp(transform.position, targetPos, shipFollowSpeed * Time.deltaTime);
+
+        //transform.localEulerAngles = new Vector3(-rotationX, rotationY, -rotationZ);
+
+        //// rb.velocity = Vector3.forward * speed * Time.deltaTime;
+
+
+        //if (thrust && !increasingSpeed && speed < maxForwardSpeed)
+        //{
+        //    increasingSpeed = true;
+        //    StartCoroutine(ChangeSpeed(speedIncreaseAmount, speedIncreaseFrequency));
+        //}
+        //else if (!thrust && !decreasingSpeed && speed > baseForwardSpeed)
+        //{
+        //    decreasingSpeed = true;
+        //    StartCoroutine(ChangeSpeed(-speedDecreaseAmount, speedDecreaseFrequency));
+        //}
     }
 
     void ControllerRotate(Vector2 cursorVector)
