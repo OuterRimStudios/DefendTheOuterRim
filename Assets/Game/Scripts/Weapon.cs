@@ -149,6 +149,9 @@ public class Weapon : MonoBehaviour
 
             for (int i = 0; i < successiveShots; i++)
             {
+                if (weaponAnimator)
+                    weaponAnimator.SetTrigger("Fire");
+
                 switch (weaponType)
                 {
                     case WeaponType.Hitscan:
