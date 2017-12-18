@@ -47,7 +47,9 @@ public class PlayerInput : MonoBehaviour
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerAnimator = GetComponent<PlayerAnimator>();
-        playerMovement.playerID = playerID;
+
+        if(playerMovement)
+            playerMovement.playerID = playerID;
     }
 
     void Update ()
@@ -58,18 +60,25 @@ public class PlayerInput : MonoBehaviour
         RecieveInput();
 
         //cursor.MoveCursor(cursorVector.x, cursorVector.y, player.controllers.hasMouse);
-        playerMovement.Move(cursorVector, thrust, player.controllers.hasMouse);
-        playerAnimator.PlayerMovement(cursorVector.x, cursorVector.y);
-        playerAnimator.PlayerAcceleration(thrust);
 
-        if (cursorVector == Vector3.zero)
-            playerAnimator.IsIdle(true);
-        else
-            playerAnimator.IsIdle(false);
+        if(playerMovement)
+            playerMovement.Move(cursorVector, thrust, player.controllers.hasMouse);
 
-        if (fire)
-            playerAnimator.Fire();
+        if(playerAnimator)
+        {
+            playerAnimator.PlayerMovement(cursorVector.x, cursorVector.y);
+            playerAnimator.PlayerAcceleration(thrust);
 
+
+            if (cursorVector == Vector3.zero)
+                playerAnimator.IsIdle(true);
+            else
+                playerAnimator.IsIdle(false);
+
+            if (fire)
+                playerAnimator.Fire();
+
+        }
         //print("Player ID: " + playerID + ". ReticleX: " + player.GetAxis("ReticleX"));
         //print("Player ID: " + playerID + ". ReticleY: " + player.GetAxis("ReticleY"));
         //print("Player ID: " + playerID + ". Horizontal2: " + player.GetAxis("Horizontal2"));

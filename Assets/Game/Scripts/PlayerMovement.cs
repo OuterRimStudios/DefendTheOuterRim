@@ -70,7 +70,9 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(Vector2 cursorVector, bool thrust, bool hasMouse)
     {
-       
+        if (mainCam == null)
+            mainCam = Camera.main;
+
         if (!hasMouse)
         {
         //    moveX = cursorVector.x * (horizontalSpeed * 5) * Time.deltaTime;
