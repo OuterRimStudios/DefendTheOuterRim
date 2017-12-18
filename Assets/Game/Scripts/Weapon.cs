@@ -119,7 +119,7 @@ public class Weapon : MonoBehaviour
     public GameObject environmentHitEffect;
 
     [Space, Header("Projectile")]
-    public GameObject projectile;
+    public ObjectPooling projectile;
     [Tooltip("Can the projectile stick to a target?")]
     public bool isSticky;
 
@@ -215,38 +215,65 @@ public class Weapon : MonoBehaviour
         {
             if(alternateFire)
             {
-                if (alternateFireCount <= weaponFirePositions.Length)
+
+                print("alternateFireCount: " + alternateFireCount + " weaponFirePositions " + weaponFirePositions.Length);
+                if (alternateFireCount <= weaponFirePositions.Length - 1)
                 {
-                    GameObject myProjectile = Instantiate(projectile, weaponFirePositions[alternateFireCount].transform.position,
-                        weaponFirePositions[alternateFireCount].transform.rotation);
+                    SpawnProjectile();
 
                     alternateFireCount++;
                 }
                 else
                 {
                     alternateFireCount = 0;
-
-                    GameObject myProjectile = Instantiate(projectile, weaponFirePositions[alternateFireCount].transform.position,
-                        weaponFirePositions[alternateFireCount].transform.rotation);
+                    SpawnProjectile();
                 }
             }
             else
             {
                 for(int i = 0; i < weaponFirePositions.Length; i++)
                 {
-                    GameObject myProjectile = Instantiate(projectile, weaponFirePositions[i].transform.position,
-                        weaponFirePositions[i].transform.rotation);
+                    GameObject obj = projectile.GetPooledObject();
+
+                    if (obj == null)
+                    {
+                        return;
+                    }
+                    obj.transform.position = weaponFirePositions[i].transform.position;
+                    obj.transform.rotation = weaponFirePositions[i].transform.rotation;
+                    obj.SetActive(true);
                 }
             }
         }
         else
         {
-            GameObject myProjectile = Instantiate(projectile, weaponFirePositions[0].transform.position, weaponFirePositions[0].transform.rotation);
+            GameObject obj = projectile.GetPooledObject();
+
+            if (obj == null)
+            {
+                return;
+            }
+            obj.transform.position = weaponFirePositions[0].transform.position;
+            obj.transform.rotation = weaponFirePositions[0].transform.rotation;
+            obj.SetActive(true);
         }
 
         //Projectile projectileUpdate = myProjectile.GetComponent<Projectile>();
         //projectileUpdate.applyDotOnHit = applyDotOnHit;
         //myProjectile.GetComponent<Projectile>().isSticky = isSticky;
+    }
+
+    void SpawnProjectile()
+    {
+        GameObject obj = projectile.GetPooledObject();
+
+        if (obj == null)
+        {
+            return;
+        }
+        obj.transform.position = weaponFirePositions[alternateFireCount].transform.position;
+        obj.transform.rotation = weaponFirePositions[alternateFireCount].transform.rotation;
+        obj.SetActive(true);
     }
 
     void FireSustained()

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
+
     [Header("Movement Variables")]
     public float baseForwardSpeed = 500f;
     public float maxForwardSpeed = 1000f;
@@ -42,7 +43,8 @@ public class PlayerMovement : MonoBehaviour
     private Quaternion qTo;
 
 	bool playerOne;
-    Camera mainCam;
+    //Temp Public
+    public Camera mainCam;
 	GameObject cursor;
 
     float rotationX;
@@ -57,7 +59,6 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        mainCam = Camera.main;
         camController = mainCam.GetComponent<CameraController>();
         speed = baseForwardSpeed;
 
@@ -70,8 +71,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(Vector2 cursorVector, bool thrust, bool hasMouse)
     {
-        if (mainCam == null)
-            mainCam = Camera.main;
 
         if (!hasMouse)
         {
@@ -110,6 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
         transform.Translate(mainCam.transform.forward * speed * Time.deltaTime);
         //transform.position = transform.position - camController.offset;
+
         transform.position = Vector3.Lerp(transform.position, mainCam.transform.position - camController.offset, speed * Time.deltaTime);
 
         //float dist = (cursor.transform.position.z - mainCam.transform.position.z);
