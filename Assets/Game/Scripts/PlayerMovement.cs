@@ -80,14 +80,14 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if (cursorVector.x == 0 && camController.panVectors[playerID].x != 0)
-                moveX = camController.panVectors[playerID].x * (horizontalSpeed * 5) * Time.deltaTime;
-            else
+          //  if (cursorVector.x == 0 && camController.panVectors[playerID].x != 0)
+           //     moveX = camController.panVectors[playerID].x * (horizontalSpeed * 5) * Time.deltaTime;
+            //else
                 moveX = cursorVector.x * (horizontalSpeed) * Time.deltaTime;
 
-            if (cursorVector.y == 0 && camController.panVectors[playerID].y != 0)
-                moveY = camController.panVectors[playerID].y * (horizontalSpeed * 5) * Time.deltaTime;
-            else
+          //  if (cursorVector.y == 0 && camController.panVectors[playerID].y != 0)
+           //     moveY = camController.panVectors[playerID].y * (horizontalSpeed * 5) * Time.deltaTime;
+          //  else
                 moveY = cursorVector.y * (horizontalSpeed) * Time.deltaTime;
             cursor.transform.position += new Vector3(moveX, moveY, 0f);
 

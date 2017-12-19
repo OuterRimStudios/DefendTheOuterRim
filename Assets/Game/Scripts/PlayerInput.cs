@@ -30,6 +30,7 @@ public class PlayerInput : MonoBehaviour
 
     PlayerMovement playerMovement;
     PlayerAnimator playerAnimator;
+    ActivateWeapon activateWeapon;
 
     private void Awake()
     {
@@ -47,6 +48,7 @@ public class PlayerInput : MonoBehaviour
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerAnimator = GetComponent<PlayerAnimator>();
+        activateWeapon = GetComponent<ActivateWeapon>();
         playerMovement.playerID = playerID;
     }
 
@@ -68,7 +70,10 @@ public class PlayerInput : MonoBehaviour
             playerAnimator.IsIdle(false);
 
         if (fire)
+        {
+            activateWeapon.Fire();
             playerAnimator.Fire();
+        }
 
         //print("Player ID: " + playerID + ". ReticleX: " + player.GetAxis("ReticleX"));
         //print("Player ID: " + playerID + ". ReticleY: " + player.GetAxis("ReticleY"));
