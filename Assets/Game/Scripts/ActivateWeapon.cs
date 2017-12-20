@@ -5,8 +5,14 @@ using UnityEngine;
 public class ActivateWeapon : MonoBehaviour
 {
     public Weapon weapon;
-    
-	public void Fire ()
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Mouse0))
+            Fire();
+    }
+
+    public void Fire ()
     {
         StartCoroutine(weapon.Fire());
 	}

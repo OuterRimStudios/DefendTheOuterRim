@@ -42,10 +42,12 @@
      * Better behaviour of surrogates in Mac
      * Better CPU perf
      * Updated VR showroom (now mostly event driven, using SteamVR's libs, improved VR start location -counter transformed start into meat space-, etc)
+     
 
+     
+     
           ----[ v 3.2.1p4 ] ----
-     * Primitives: Added sphere & subtractive mode
-     * Added FogVolumePrimitiveManager which supports up to 20 primitives that can be visible at the same time.
+    * Added FogVolumePrimitiveManager which supports up to 20 primitives that can be visible at the same time.
      * The total amount of supported primitives is the same as for lights and is set to 1000. Only the 20 closest to the camera will be taken into account.
      * Fixed a bug where removing a light would always return false.
      * Overhauled the FogVolume menu to make it more accessible.
