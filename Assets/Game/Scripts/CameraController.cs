@@ -54,21 +54,21 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
-       // Pan();
+        // Pan();
 
-        //if (!multiplayer)
-        //{
-        //    // transform.localRotation = Quaternion.identity;
-        //    //transform.position = Vector3.SmoothDamp(transform.position, playerOne.transform.position + offset, ref velocity, smoothTime);
-        //    transform.root.position = Vector3.Lerp(transform.position, playerOne.transform.position + offset, smoothTime);
-        //}
-        //else
-        //{
-        //    Vector3 targetLocation = new Vector3((playerOne.position.x + playerTwo.position.x) / 2, (playerOne.position.y + playerTwo.position.y) / 2, (playerOne.position.z + playerTwo.position.z) / 2);
+        if (!multiplayer)
+        {
+            // transform.localRotation = Quaternion.identity;
+            //transform.position = Vector3.SmoothDamp(transform.position, playerOne.transform.position + offset, ref velocity, smoothTime);
+            transform.root.position = Vector3.Lerp(transform.position, playerOne.transform.position + offset, smoothTime);
+        }
+        else
+        {
+            Vector3 targetLocation = new Vector3((playerOne.position.x + playerTwo.position.x) / 2, (playerOne.position.y + playerTwo.position.y) / 2, (playerOne.position.z + playerTwo.position.z) / 2);
 
-        //    transform.position = Vector3.SmoothDamp(transform.position, targetLocation + offset, ref velocity, smoothTime);
-        //    //transform.position = Vector3.Lerp(transform.position,targetLocation + offset, smoothTime * Time.deltaTime);
-        //}
+            transform.position = Vector3.SmoothDamp(transform.position, targetLocation + offset, ref velocity, smoothTime);
+            //transform.position = Vector3.Lerp(transform.position,targetLocation + offset, smoothTime * Time.deltaTime);
+        }
     }
 
     void CheckForPan()

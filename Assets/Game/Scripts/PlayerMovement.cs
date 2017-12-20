@@ -91,6 +91,8 @@ public class PlayerMovement : MonoBehaviour
                 moveY = cursorVector.y * (horizontalSpeed) * Time.deltaTime;
             cursor.transform.position += new Vector3(moveX, moveY, 0f);
 
+            transform.position = new Vector3(transform.position.x, transform.position.y, mainCam.transform.position.z + 10);
+
             MouseRotate(cursorVector);
         }
 
