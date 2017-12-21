@@ -66,6 +66,9 @@ public class PlayerMovement : MonoBehaviour
 
 		cursor = transform.Find ("Cursor").gameObject;
 		cursor.transform.parent = transform.root;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void Move(Vector2 cursorVector, bool thrust, bool hasMouse)
@@ -96,19 +99,25 @@ public class PlayerMovement : MonoBehaviour
             MouseRotate(cursorVector);
         }
 
-        float dist = (cursor.transform.localPosition.z - mainCam.transform.localPosition.z);
+        Vector3 cursorPos = mainCam.WorldToViewportPoint(cursor.transform.position);
 
-        float cursorLeftClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMin, 0, dist)).x;
-        float cursorRightClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMax, 0, dist)).x;
-        float cursorUpClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMax, dist)).y;
-        float cursorDownClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMin, dist)).y;
+        cursorPos.x = Mathf.Clamp(cursorPos.x, cursorClampXMin, cursorClampXMax);
+        cursorPos.y = Mathf.Clamp(cursorPos.y, cursorClampYMin, cursorClampYMax);
+        cursor.transform.position = mainCam.ViewportToWorldPoint(cursorPos);
 
-        Vector3 cursorClampPos = new Vector3(Mathf.Clamp(cursor.transform.localPosition.x, cursorLeftClamp, cursorRightClamp),
-            Mathf.Clamp(cursor.transform.localPosition.y, cursorDownClamp, cursorUpClamp), 0);
+        //float dist = (cursor.transform.localPosition.z - mainCam.transform.localPosition.z);
 
-        cursorClampPos = cursor.transform.InverseTransformVector(cursorClampPos);
+        //float cursorLeftClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMin, 0, dist)).x;
+        //float cursorRightClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMax, 0, dist)).x;
+        //float cursorUpClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMax, dist)).y;
+        //float cursorDownClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMin, dist)).y;
 
-        cursor.transform.localPosition = cursorClampPos;
+        //Vector3 cursorClampPos = new Vector3(Mathf.Clamp(cursor.transform.localPosition.x, cursorLeftClamp, cursorRightClamp),
+        //    Mathf.Clamp(cursor.transform.localPosition.y, cursorDownClamp, cursorUpClamp), 0);
+
+        //cursorClampPos = cursor.transform.InverseTransformVector(cursorClampPos);
+
+        //cursor.transform.localPosition = cursorClampPos;
 
         Vector3 targetPos = new Vector3(cursor.transform.localPosition.x, cursor.transform.localPosition.y, 5);
         transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, shipFollowSpeed * Time.deltaTime);
