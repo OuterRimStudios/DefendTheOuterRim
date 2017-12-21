@@ -10,8 +10,6 @@ public class PlayerInput : MonoBehaviour
     private Vector2 radialVector;
     private bool raidialActive;
 
-    public CursorMovement cursor;
-
 	[HideInInspector]
 	public bool thrust;
     private bool fire;
@@ -58,8 +56,7 @@ public class PlayerInput : MonoBehaviour
         if (!initialized) Initialize();
 
         RecieveInput();
-
-        //cursor.MoveCursor(cursorVector.x, cursorVector.y, player.controllers.hasMouse);
+        
         playerMovement.Move(cursorVector, thrust, player.controllers.hasMouse);
         playerAnimator.PlayerMovement(cursorVector.x, cursorVector.y);
         playerAnimator.PlayerAcceleration(thrust);
