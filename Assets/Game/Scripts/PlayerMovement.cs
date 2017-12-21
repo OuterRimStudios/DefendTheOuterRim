@@ -8,8 +8,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Variables")]
     public float baseForwardSpeed = 500f;
     public float maxForwardSpeed = 1000f;
-    public float horizontalSpeed = 10f;
-    public float shipFollowSpeed = 7.5f;
 
     public float speedIncreaseAmount = 100f;
     public float speedDecreaseAmount = 200f;
@@ -17,54 +15,51 @@ public class PlayerMovement : MonoBehaviour
     public float speedIncreaseFrequency = .5f;
     public float speedDecreaseFrequency = .5f;
 
-    [Space, Header("Rotation Variables")]
-    public float rotationSpeed = 100f;
-    public float cursorClampXMin = 30f;
-    public float cursorClampXMax = 30f;
-    public float cursorClampYMin = 15f;
-    public float cursorClampYMax = 20f;
-    public float xClamp = 25f;
-    public float yClamp = 25f;
-    public float zClamp = 25f;
+    [Header("Cursor Variables")]
+    public float cursorSensitiviy = 2.5f;
+    public float controllerCursorSensitiviy = 50f;
+
+    public float cursorClampXMin = -.5f;
+    public float cursorClampXMax = 1.5f;
+    public float cursorClampYMin = -.5f;
+    public float cursorClampYMax = 1.5f;
+
+    [Space, Header("Ship Variables")]
+    public float shipFollowSpeed = 7.5f;
+    public float shipRotationSpeed = 100f;
+
+    public float shipClampXMin = -10f;
+    public float shipClampXMax = 10f;
+    public float shipClampYMin = -4f;
+    public float shipClampYMax = 4f;
 
     [HideInInspector]
     public int playerID;
 
-    bool increasingSpeed;
-    bool decreasingSpeed;
-
     float speed;
-
-    Vector3 initialPos;
-
-    Rigidbody rb;
-
-    private Quaternion qTo;
-
-	bool playerOne;
-    Camera mainCam;
-	GameObject cursor;
-
-    float rotationX;
-    float rotationY;
-    float rotationZ;
-
     float moveX;
     float moveY;
 
-    CameraController camController;
+    Vector3 initialPos;
+
+    Camera mainCam;
+    GameObject cursor;
+    GameObject reticle;
+
+    bool playerOne;
+    bool increasingSpeed;
+    bool decreasingSpeed;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
         mainCam = Camera.main;
-        camController = mainCam.GetComponent<CameraController>();
         speed = baseForwardSpeed;
 
 		if (GetComponent<PlayerInput> ().playerID == 0)
 			playerOne = true;
 
 		cursor = transform.Find ("Cursor").gameObject;
+        reticle = cursor.transform.Find("Reticle").gameObject;
 		cursor.transform.parent = transform.root;
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -73,59 +68,35 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(Vector2 cursorVector, bool thrust, bool hasMouse)
     {
-        if (!hasMouse)
-        {
-            moveX = cursorVector.x * (horizontalSpeed * 5) * Time.deltaTime;
-            moveY = cursorVector.y * (horizontalSpeed * 5) * Time.deltaTime;
+        if (!hasMouse)                                                                      //Checks if you are using controller or mouse
+        {                                                                                   //and adjust sensitivty accordingly
+            moveX = cursorVector.x * controllerCursorSensitiviy * Time.deltaTime;
+            moveY = cursorVector.y * controllerCursorSensitiviy * Time.deltaTime;
             cursor.transform.localPosition += new Vector3(moveX, moveY, 0f);
-
-            ControllerRotate(cursorVector);
         }
         else
         {
-          //  if (cursorVector.x == 0 && camController.panVectors[playerID].x != 0)
-           //     moveX = camController.panVectors[playerID].x * (horizontalSpeed * 5) * Time.deltaTime;
-            //else
-                moveX = cursorVector.x * (horizontalSpeed) * Time.deltaTime;
-
-          //  if (cursorVector.y == 0 && camController.panVectors[playerID].y != 0)
-           //     moveY = camController.panVectors[playerID].y * (horizontalSpeed * 5) * Time.deltaTime;
-          //  else
-                moveY = cursorVector.y * (horizontalSpeed) * Time.deltaTime;
+            moveX = cursorVector.x * cursorSensitiviy * Time.deltaTime;
+            moveY = cursorVector.y * cursorSensitiviy * Time.deltaTime;
             cursor.transform.localPosition += new Vector3(moveX, moveY, 0f);
-
-            //transform.position = new Vector3(transform.position.x, transform.position.y, mainCam.transform.position.z + 10);
-
-            MouseRotate(cursorVector);
         }
 
-        Vector3 cursorPos = mainCam.WorldToViewportPoint(cursor.transform.position);
+        Vector3 cursorPos = mainCam.WorldToViewportPoint(cursor.transform.position);        //Find the cursor's position in the viewport
 
-        cursorPos.x = Mathf.Clamp(cursorPos.x, cursorClampXMin, cursorClampXMax);
+        cursorPos.x = Mathf.Clamp(cursorPos.x, cursorClampXMin, cursorClampXMax);           //Clamp the cursor's position within the viewport
         cursorPos.y = Mathf.Clamp(cursorPos.y, cursorClampYMin, cursorClampYMax);
-        cursor.transform.position = mainCam.ViewportToWorldPoint(cursorPos);
 
-        //float dist = (cursor.transform.localPosition.z - mainCam.transform.localPosition.z);
+        cursor.transform.position = mainCam.ViewportToWorldPoint(cursorPos);                //Set the cursor's position to the new clamped positon
 
-        //float cursorLeftClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMin, 0, dist)).x;
-        //float cursorRightClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMax, 0, dist)).x;
-        //float cursorUpClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMax, dist)).y;
-        //float cursorDownClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMin, dist)).y;
-
-        //Vector3 cursorClampPos = new Vector3(Mathf.Clamp(cursor.transform.localPosition.x, cursorLeftClamp, cursorRightClamp),
-        //    Mathf.Clamp(cursor.transform.localPosition.y, cursorDownClamp, cursorUpClamp), 0);
-
-        //cursorClampPos = cursor.transform.InverseTransformVector(cursorClampPos);
-
-        //cursor.transform.localPosition = cursorClampPos;
-
-        Vector3 targetPos = new Vector3(cursor.transform.localPosition.x, cursor.transform.localPosition.y, 5);
+        Vector3 targetPos = new Vector3(cursor.transform.localPosition.x, cursor.transform.localPosition.y, 5);             //Find the cursors position and set the ships position to it
         transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, shipFollowSpeed * Time.deltaTime);
 
-        transform.localEulerAngles = new Vector3(-rotationX, rotationY, -rotationZ);
+        //Clamp the ships position within the viewport
+        transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, shipClampXMin, shipClampXMax), Mathf.Clamp(transform.localPosition.y, shipClampYMin, shipClampYMax), transform.localPosition.z);
 
-        // rb.velocity = Vector3.forward * speed * Time.deltaTime;
-        
+        Vector3 relativePos = reticle.transform.position - transform.position;
+        Quaternion rotation = Quaternion.LookRotation(relativePos);                                                         //Make the ship face the cursor
+        transform.rotation = Quaternion.Lerp(transform.rotation, rotation, shipRotationSpeed * Time.deltaTime);
 
         if (thrust && !increasingSpeed && speed < maxForwardSpeed)
         {
@@ -137,40 +108,6 @@ public class PlayerMovement : MonoBehaviour
             decreasingSpeed = true;
             StartCoroutine(ChangeSpeed(-speedDecreaseAmount, speedDecreaseFrequency));
         }
-    }
-
-    void ControllerRotate(Vector2 cursorVector)
-    {
-        rotationX = Mathf.Lerp(rotationX, 0, .1f);
-        rotationX += cursorVector.y * (rotationSpeed * 15) * Time.deltaTime;
-        rotationX = Mathf.Clamp(rotationX, -xClamp, xClamp);
-
-        rotationY = Mathf.Lerp(rotationY, 0, .1f);
-        rotationY += cursorVector.x * (rotationSpeed * 15) * Time.deltaTime;
-        rotationY = Mathf.Clamp(rotationY, -yClamp, yClamp);
-
-        rotationZ = Mathf.Lerp(rotationZ, 0, .1f);
-        rotationZ += cursorVector.x * (rotationSpeed * 15) * Time.deltaTime;
-        rotationZ = Mathf.Clamp(rotationZ, -zClamp, zClamp);
-    }
-
-    void MouseRotate(Vector2 cursorVector)
-    {
-        if(cursorVector == Vector2.zero)
-        {
-            rotationX = Mathf.Lerp(rotationX, 0, .1f);
-            rotationY = Mathf.Lerp(rotationY, 0, .1f);
-            rotationZ = Mathf.Lerp(rotationZ, 0, .1f);
-        }
-        
-        rotationX += cursorVector.y * rotationSpeed * Time.deltaTime;
-        rotationX = Mathf.Clamp(rotationX, -xClamp, xClamp);
-        
-        rotationY += cursorVector.x * rotationSpeed * Time.deltaTime;
-        rotationY = Mathf.Clamp(rotationY, -yClamp, yClamp);
-        
-        rotationZ += cursorVector.x * rotationSpeed * Time.deltaTime;
-        rotationZ = Mathf.Clamp(rotationZ, -zClamp, zClamp);
     }
 
     IEnumerator ChangeSpeed(float amount, float frequency)
