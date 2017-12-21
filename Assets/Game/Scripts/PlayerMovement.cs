@@ -96,15 +96,19 @@ public class PlayerMovement : MonoBehaviour
             MouseRotate(cursorVector);
         }
 
-        float dist = (cursor.transform.localPosition.z - mainCam.transform.position.z);
+        float dist = (cursor.transform.localPosition.z - mainCam.transform.localPosition.z);
 
         float cursorLeftClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMin, 0, dist)).x;
         float cursorRightClamp = mainCam.ViewportToWorldPoint(new Vector3(cursorClampXMax, 0, dist)).x;
         float cursorUpClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMax, dist)).y;
         float cursorDownClamp = mainCam.ViewportToWorldPoint(new Vector3(0, cursorClampYMin, dist)).y;
 
-        //cursor.transform.localPosition = new Vector3(Mathf.Clamp(cursor.transform.localPosition.x, cursorLeftClamp, cursorRightClamp),
-        //    Mathf.Clamp(cursor.transform.localPosition.y, cursorDownClamp, cursorUpClamp), 0f);
+        Vector3 cursorClampPos = new Vector3(Mathf.Clamp(cursor.transform.localPosition.x, cursorLeftClamp, cursorRightClamp),
+            Mathf.Clamp(cursor.transform.localPosition.y, cursorDownClamp, cursorUpClamp), 0);
+
+        cursorClampPos = cursor.transform.InverseTransformVector(cursorClampPos);
+
+        cursor.transform.localPosition = cursorClampPos;
 
         Vector3 targetPos = new Vector3(cursor.transform.localPosition.x, cursor.transform.localPosition.y, 5);
         transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, shipFollowSpeed * Time.deltaTime);
