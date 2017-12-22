@@ -25,6 +25,7 @@ public class MenuVariableHandler
     public Button eBackButton;
     public TextMeshProUGUI eAddPlayersText;
 
+    public ChangeCameraValues onePlayer;
     public ChangeCameraValues twoPlayers;
     public ChangeCameraValues threePlayers;
     public ChangeCameraValues fourPlayers;

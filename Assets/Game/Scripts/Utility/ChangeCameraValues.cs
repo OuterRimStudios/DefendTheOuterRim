@@ -7,12 +7,7 @@ public class ChangeCameraValues : MonoBehaviour
     public Vector3 desiredPosition;
     public Vector3 desiredRotation;
 
-    AdjustCameraPosition adjustCamera;
-
-    void Start()
-    {
-        adjustCamera = Camera.main.GetComponent<AdjustCameraPosition>();
-    }
+    public AdjustCameraPosition adjustCamera;
 
     public void ChangeCameraPosition()
     {

@@ -697,7 +697,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4147280897169294}
   - component: {fileID: 114075923978824520}
-  - component: {fileID: 114158260277745622}
   - component: {fileID: 114479254343863308}
   m_Layer: 0
   m_Name: RewiredEventSystem
@@ -1147,18 +1146,6 @@ MonoBehaviour:
     _component: {fileID: 114316158204818860}
   - _themeClass: button
     _component: {fileID: 114493815562687006}
---- !u!114 &114158260277745622
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1756133773066644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1997211142, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ForceModuleActive: 0
 --- !u!114 &114172147856858832
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1573,8 +1560,32 @@ MonoBehaviour:
       _assignKeyboardOnStart: 1
       _excludeFromControllerAutoAssignment: 1
     - _id: 1
-      _name: Player0
-      _descriptiveName: Player0
+      _name: Player1
+      _descriptiveName: Player1
+      _startPlaying: 1
+      _defaultJoystickMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultMouseMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultKeyboardMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultCustomControllerMaps: []
+      _startingCustomControllers: []
+      _assignMouseOnStart: 1
+      _assignKeyboardOnStart: 1
+      _excludeFromControllerAutoAssignment: 1
+    - _id: 2
+      _name: Player2
+      _descriptiveName: Player2
       _startPlaying: 1
       _defaultJoystickMaps:
       - _enabled: 1
@@ -1593,9 +1604,30 @@ MonoBehaviour:
       _assignMouseOnStart: 0
       _assignKeyboardOnStart: 0
       _excludeFromControllerAutoAssignment: 1
-    - _id: 2
-      _name: Player1
-      _descriptiveName: Player1
+    - _id: 3
+      _name: Player3
+      _descriptiveName: Player3
+      _startPlaying: 1
+      _defaultJoystickMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultMouseMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultKeyboardMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultCustomControllerMaps: []
+      _startingCustomControllers: []
+      _assignMouseOnStart: 0
+      _assignKeyboardOnStart: 0
+      _excludeFromControllerAutoAssignment: 1
+    - _id: 4
+      _name: Player4
+      _descriptiveName: Player4
       _startPlaying: 1
       _defaultJoystickMaps:
       - _enabled: 1
@@ -2110,7 +2142,7 @@ MonoBehaviour:
         _modifierKey3: 0
     customControllerMaps: []
     customControllers: []
-    playerIdCounter: 3
+    playerIdCounter: 5
     actionIdCounter: 14
     actionCategoryIdCounter: 5
     inputBehaviorIdCounter: 2
@@ -2414,7 +2446,7 @@ MonoBehaviour:
   useAllRewiredGamePlayers: 1
   useRewiredSystemPlayer: 1
   rewiredPlayerIds: 00000000
-  usePlayingPlayersOnly: 0
+  usePlayingPlayersOnly: 1
   moveOneElementPerAxisPress: 0
   m_HorizontalAxis: UIHorizontal
   m_VerticalAxis: UIVertical
@@ -2637,6 +2669,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61f5243e96479c247848acd024ac8277, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlsAssigned: 
 --- !u!114 &114553668225334300
 MonoBehaviour:
   m_ObjectHideFlags: 1

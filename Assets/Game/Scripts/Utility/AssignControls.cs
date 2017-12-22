@@ -24,6 +24,7 @@ public class AssignControls : MonoBehaviour {
     [HideInInspector]
     public List<bool> controlsAssigned;
 
+
     void Awake()
     {
         menu = GameObject.Find("Manager").GetComponent<Menu>();
@@ -66,31 +67,53 @@ public class AssignControls : MonoBehaviour {
 
     void AssignControl()
     {
-        if (controlsAssigned.Count < 1 || checkForInput)
+        if(controlsAssigned.Count < 1)
         {
-            if (!keyboardAssigned)
+            Player playerOne = ReInput.players.GetPlayer(0);
+
+            if (PlatformManager.systemType == PlatformManager.SystemType.PC)
             {
-                if (ReInput.controllers.Keyboard.GetAnyButtonDown() || ReInput.controllers.Mouse.GetAnyButtonDown())
+
+                for (int i = 0; i < ReInput.players.Players.Count; i++)
                 {
-                    Player player = FindPlayerWithoutJoystick();
-                    if (player == null) return;
-
-                    for (int i = 0; i < ReInput.players.Players.Count; i++)
-                    {
-                        ReInput.players.Players[i].controllers.hasKeyboard = false;
-                        ReInput.players.Players[i].controllers.hasMouse = false;
-                    }
-
-                    player.controllers.hasKeyboard = true;
-                    player.controllers.hasMouse = true;
-                    player.controllers.excludeFromControllerAutoAssignment = true;
-
-                    controlsAssigned.Add(true);
-                    UpdatePlayerCount();
-
-                    keyboardAssigned = true;
+                    ReInput.players.Players[i].controllers.hasKeyboard = false;
+                    ReInput.players.Players[i].controllers.hasMouse = false;
                 }
+
+                playerOne.controllers.hasKeyboard = true;
+                playerOne.controllers.hasMouse = true;
+                playerOne.controllers.excludeFromControllerAutoAssignment = true;
+
+                controlsAssigned.Add(true);
+                UpdatePlayerCount();
+
+                keyboardAssigned = true;
             }
+            else if(PlatformManager.systemType == PlatformManager.SystemType.XBOX || PlatformManager.systemType == PlatformManager.SystemType.PS4)
+            {
+                // Assign the joystick to this Player
+                playerOne.controllers.AddController(ReInput.controllers.Joysticks[0], false);
+
+                controlsAssigned.Add(true);
+                UpdatePlayerCount();
+            }
+        }
+
+        if (checkForInput)
+        {
+            CheckForInput();
+
+            //if (!keyboardAssigned)
+            //{
+            //    if (ReInput.controllers.Keyboard.GetAnyButtonDown() || ReInput.controllers.Mouse.GetAnyButtonDown())
+            //    {
+            //        Player player = FindPlayerWithoutJoystick();
+            //        if (player == null) return;
+
+            //        
+
+            //    }
+            //}
 
             IList<Joystick> joysticks = ReInput.controllers.Joysticks;
             for (int i = 0; i < joysticks.Count; i++)
@@ -107,7 +130,6 @@ public class AssignControls : MonoBehaviour {
 
                     // Assign the joystick to this Player
                     player.controllers.AddController(joystick, false);
-
                     controlsAssigned.Add(true);
                     UpdatePlayerCount();
                 }
@@ -140,12 +162,22 @@ public class AssignControls : MonoBehaviour {
 
     void UpdatePlayerCount()
     {
+        if(controlsAssigned.Count == 4)
+        {
+            cAddPlayersText.gameObject.SetActive(false);
+            eAddPlayersText.gameObject.SetActive(false);
+        }
+
         cAddPlayersText.text = "Player " + (controlsAssigned.Count + 1) + " press any button to join.";
         eAddPlayersText.text = "Player " + (controlsAssigned.Count + 1) + " press any button to join.";
 
         if (menu == null) return;
         switch (controlsAssigned.Count)
         {
+            case 1:
+                menu.menuVariableHandler.onePlayer.ChangeCameraPosition();
+                menu.menuVariableHandler.onePlayer.ChangeCameraRotation();
+                break;
             case 2:
                 menu.menuVariableHandler.twoPlayers.ChangeCameraPosition();
                 menu.menuVariableHandler.twoPlayers.ChangeCameraRotation();
@@ -161,5 +193,61 @@ public class AssignControls : MonoBehaviour {
             default:
                 break;
         }
+    }
+
+    void CheckForInput()
+    {
+        Player playerOne = ReInput.players.GetPlayer(0);
+        Player playerTwo = ReInput.players.GetPlayer(1);
+        Player playerThree = ReInput.players.GetPlayer(2);
+        Player playerFour = ReInput.players.GetPlayer(3);
+
+        print(playerOne.name);
+        print(playerTwo.name);
+        print(playerThree.name);
+        print(playerFour.name);
+
+
+        print("ReInput Player Count: " + ReInput.players.playerCount);
+        for (int i = 0; i < ReInput.players.playerCount; i++)
+        {
+            print(ReInput.players.GetPlayerId("Player" + (i + 1)));
+        }
+
+
+        //print(controlsAssigned.Count);
+        //for(int i = 0; i < controlsAssigned.Count; i++)
+        //{
+        //    print("Player " + (i + 1)+ " " + controlsAssigned[i]);
+        //}
+
+        if (playerTwo.GetButtonDown("Back"))
+        {
+            print("Unassigning Controls for Player " + playerTwo.descriptiveName);
+            controlsAssigned.Remove(controlsAssigned[1]);
+            UnAssignController(playerTwo);
+        }
+
+        if (playerThree.GetButtonDown("Back"))
+        {
+            print("Unassigning Controls for Player " + playerThree.descriptiveName);
+            controlsAssigned.Remove(controlsAssigned[2]);
+            UnAssignController(playerThree);
+        }
+
+        if (playerFour.GetButtonDown("Back"))
+        {
+            print("Unassigning Controls for Player " + playerFour.descriptiveName);
+            controlsAssigned.Remove(controlsAssigned[3]);
+            UnAssignController(playerFour);
+        }
+    }
+
+    void UnAssignController(Player player)
+    {
+        UpdatePlayerCount();
+        player.controllers.RemoveController(player.controllers.GetController(ControllerType.Joystick, player.id));
+       // player.controllers.hasKeyboard = false;
+       // player.controllers.hasMouse = false;
     }
 }
