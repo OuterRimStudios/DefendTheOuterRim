@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class TextBlinkEffect : MonoBehaviour
 {
     public float blinkFrequency;
 
     float frequency;
-    Text myImage;
+    TextMeshProUGUI myImage;
     bool blinking;
 
     void Start()
     {
-        myImage = GetComponent<Text>();
+        myImage = GetComponent<TextMeshProUGUI>();
         frequency = blinkFrequency * .5f;
     }
 
