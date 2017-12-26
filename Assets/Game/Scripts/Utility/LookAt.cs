@@ -8,6 +8,6 @@ public class LookAt : MonoBehaviour
 
 	void Update ()
     {
-        transform.LookAt(target);
+        transform.LookAt(-target.position);
 	}
 }

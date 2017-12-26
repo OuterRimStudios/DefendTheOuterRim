@@ -375,9 +375,8 @@ GameObject:
   - component: {fileID: 54657609888395068}
   - component: {fileID: 114109488864982708}
   - component: {fileID: 114789977694486242}
-  - component: {fileID: 114788420512470472}
-  - component: {fileID: 114434070019686548}
   - component: {fileID: 114897766123850678}
+  - component: {fileID: 114252068014557354}
   m_Layer: 0
   m_Name: PlayerOne
   m_TagString: Untagged
@@ -4176,6 +4175,30 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114252068014557354
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1411181168036712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2b82c757a706dd44ad77efcf0d513f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  barrels:
+  - {fileID: 4993447934358808}
+  - {fileID: 4680923843204488}
+  ShellParticles: []
+  defaultGunType: 0
+  projectile: {fileID: 400000, guid: e496166a742ada640b89650ebebbd052, type: 2}
+  muzzleFlash: {fileID: 400002, guid: ca6dec307275d294ba519247d04b6733, type: 2}
+  impactEffect: {fileID: 400000, guid: bfa7781c328a236468eda51a8ae2be55, type: 2}
+  gunOffset: 0
+  beamEffect: {fileID: 0}
+  fireFrequency: 0.05
+  isProjectile: 0
+  isBeam: 0
 --- !u!114 &114257794931276292
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4196,13 +4219,13 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1515947444125406}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 472ce5b39a4780a48a521ce5f31fbc1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pooledObject:
-  - {fileID: 1249054824642876, guid: 5219870810a7a1449ae765eb9da5b763, type: 2}
+  - {fileID: 0}
   pooledAmount: 9
   waitTime: 0.001
   willGrow: 1
@@ -4228,18 +4251,6 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &114434070019686548
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1411181168036712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32f4d2e1165714044a2d552ccc911fde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weapon: {fileID: 114788420512470472}
 --- !u!114 &114459325519303976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4262,12 +4273,12 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1831903208324716}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f386f8dcb79e1be43a80325611513da4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 4551685678058812}
+  target: {fileID: 224953416631572430}
 --- !u!114 &114633405718896490
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4331,88 +4342,12 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1115780139730126}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f386f8dcb79e1be43a80325611513da4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 4551685678058812}
---- !u!114 &114788420512470472
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1411181168036712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51d41b0f039df184998a13a6cb351d75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponType: 2
-  myCamera: {fileID: 0}
-  minDamage: 3
-  maxDamage: 6
-  critChance: 10
-  critDamageMultiplier: 1
-  fireFrequency: 0.5
-  successiveShots: 3
-  timeBetweenSuccessiveShots: 0.1
-  hasResource: 0
-  hasAmmo: 0
-  ammo: 0
-  unlimitedAmmo: 0
-  multifire: 1
-  alternateFire: 0
-  hasReload: 0
-  reloadTime: 0
-  hasOverheat: 0
-  maxHeatAmount: 0
-  heatIncreaseAmount: 0
-  heatDecreaseAmount: 0
-  heatIncreaseFrequency: 0
-  heatDecreaseFrequency: 0
-  heatIncreaseDelay: 0
-  overheatedLength: 0
-  hasCooldown: 0
-  cooldownLength: 0
-  startCooldownWhenOutOfAmmo: 0
-  startCooldownOnFire: 0
-  startCooldownAfter: 0
-  hasCharges: 0
-  maxCharges: 0
-  isDelayed: 0
-  delayEffect: {fileID: 0}
-  delayTime: 0
-  autoFire: 0
-  targetTag: 
-  detectionDistance: 0
-  canAim: 0
-  aimPosition: {x: 0, y: 0, z: 0}
-  aimRotation: {x: 0, y: 0, z: 0}
-  aimAssist: 0
-  aimAssistAccuracy: 0
-  applyDotOnHit: 0
-  weaponFireEffects: []
-  weaponFirePositions:
-  - {fileID: 1115780139730126}
-  - {fileID: 1831903208324716}
-  weaponAnimator: {fileID: 95571868899319452}
-  damageOverTimeEffect: {fileID: 0}
-  timeBetweenDamage: 0
-  dotLength: 0
-  targetableLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  hitScanAttackRange: 0
-  hitScanAccuracy: 0
-  targetHitEffect: {fileID: 0}
-  environmentHitEffect: {fileID: 0}
-  projectile: {fileID: 0}
-  isSticky: 0
-  damageCollider: {fileID: 0}
-  sustainedEffect: {fileID: 0}
-  sustainedEffectFrequency: 0
-  sustainedDamageFrequency: 0
+  target: {fileID: 224953416631572430}
 --- !u!114 &114789977694486242
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -49,6 +49,7 @@ public class ObjectPooling : MonoBehaviour
     {
         for (int i = 0; i < pooledObject.Length; i++)
         {
+            if (pooledObject[i] == null) break;
             GameObject obj = (GameObject)Instantiate(pooledObject[i]);
             obj.transform.parent = transform;
 

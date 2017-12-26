@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Rewired;
+using Forge3D;
 
 public class PlayerInput : MonoBehaviour 
 {
@@ -28,7 +29,9 @@ public class PlayerInput : MonoBehaviour
 
     PlayerMovement playerMovement;
     PlayerAnimator playerAnimator;
-    ActivateWeapon activateWeapon;
+    F3DFXController controller;
+
+    bool isFiring;
 
     private void Awake()
     {
@@ -46,7 +49,7 @@ public class PlayerInput : MonoBehaviour
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerAnimator = GetComponent<PlayerAnimator>();
-        activateWeapon = GetComponent<ActivateWeapon>();
+        controller = GetComponent<F3DFXController>();
         playerMovement.playerID = playerID;
     }
 
@@ -66,11 +69,20 @@ public class PlayerInput : MonoBehaviour
         else
             playerAnimator.IsIdle(false);
 
-        if (fire)
+        if (!isFiring && fire)
         {
-            activateWeapon.Fire();
+            isFiring = true;
+            controller.Fire();
+            print("Fire");
             playerAnimator.Fire();
         }
+
+        if (isFiring && !fire)
+        {
+            isFiring = false;
+            controller.Stop();
+        }
+
 
         //print("Player ID: " + playerID + ". ReticleX: " + player.GetAxis("ReticleX"));
         //print("Player ID: " + playerID + ". ReticleY: " + player.GetAxis("ReticleY"));
