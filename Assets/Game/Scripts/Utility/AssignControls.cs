@@ -176,6 +176,7 @@ public class AssignControls : MonoBehaviour {
 
     void UpdatePlayerCount()
     {
+        PlayerWrangler.playerCount = controlsAssigned.Count;
         if(controlsAssigned.Count == 4)
         {
             cAddPlayersText.gameObject.SetActive(false);

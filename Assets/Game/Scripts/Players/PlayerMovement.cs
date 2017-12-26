@@ -50,7 +50,7 @@ public class PlayerMovement : MonoBehaviour
     bool increasingSpeed;
     bool decreasingSpeed;
 
-    void Start()
+    void Awake()
     {
         mainCam = Camera.main;
         speed = baseForwardSpeed;
@@ -58,10 +58,10 @@ public class PlayerMovement : MonoBehaviour
 		if (GetComponent<PlayerInput> ().playerID == 0)
 			playerOne = true;
 
-		cursor = transform.Find ("Cursor").gameObject;
-        reticle = cursor.transform.Find("Reticle").gameObject;
-		cursor.transform.parent = transform.root;
+        reticle = transform.Find("Reticle").gameObject;
 
+        cursor = transform.Find ("Cursor").gameObject;
+		cursor.transform.parent = transform.root;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }

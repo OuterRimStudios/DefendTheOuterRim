@@ -8,7 +8,6 @@ using TMPro;
 public class Menu : MonoBehaviour
 {
     public MenuVariableHandler menuVariableHandler;
-
     public void LoadScene(int index)
     {
         SceneManager.LoadScene(index);
