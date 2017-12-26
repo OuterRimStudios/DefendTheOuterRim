@@ -24,6 +24,7 @@ public class AssignControls : MonoBehaviour {
     [HideInInspector]
     public List<bool> controlsAssigned;
 
+    int controllerInUse; //False if this is 1
 
     void Awake()
     {
@@ -60,11 +61,20 @@ public class AssignControls : MonoBehaviour {
         checkForInput = !checkForInput;
     }
 
-	void Update () {
+    void Update()
+    {
         if (!ReInput.isReady) return;
         AssignControl();
-	}
 
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            IList<Player> players = ReInput.players.Players;
+            for (int i = 0; i < players.Count; i++)
+            {
+                print("Player " + i + " Joystick Count: " + players[i].controllers.joystickCount);
+            }
+        }
+    }
     void AssignControl()
     {
         if(controlsAssigned.Count < 1)
@@ -79,6 +89,8 @@ public class AssignControls : MonoBehaviour {
                     ReInput.players.Players[i].controllers.hasKeyboard = false;
                     ReInput.players.Players[i].controllers.hasMouse = false;
                 }
+
+                controllerInUse = 1;
 
                 playerOne.controllers.hasKeyboard = true;
                 playerOne.controllers.hasMouse = true;
@@ -101,7 +113,6 @@ public class AssignControls : MonoBehaviour {
 
         if (checkForInput)
         {
-            CheckForInput();
 
             //if (!keyboardAssigned)
             //{
@@ -116,7 +127,7 @@ public class AssignControls : MonoBehaviour {
             //}
 
             IList<Joystick> joysticks = ReInput.controllers.Joysticks;
-            for (int i = 0; i < joysticks.Count; i++)
+            for (int i = 0 + controllerInUse; i < joysticks.Count; i++)
             {
                 Joystick joystick = joysticks[i];
                 if (ReInput.controllers.IsControllerAssigned(joystick.type, joystick.id)) continue; // joystick is already assigned to a Player
@@ -140,6 +151,8 @@ public class AssignControls : MonoBehaviour {
                 ReInput.configuration.autoAssignJoysticks = true;
                 this.enabled = false; // disable this script
             }
+
+            CheckForInput();
         }
     }
 
@@ -147,8 +160,9 @@ public class AssignControls : MonoBehaviour {
     private Player FindPlayerWithoutJoystick()
     {
         IList<Player> players = ReInput.players.Players;
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0 + controllerInUse; i < players.Count; i++)
         {
+            print(players[i].controllers.joystickCount);
             if (players[i].controllers.joystickCount > 0) continue;
             return players[i];
         }
@@ -202,25 +216,6 @@ public class AssignControls : MonoBehaviour {
         Player playerThree = ReInput.players.GetPlayer(2);
         Player playerFour = ReInput.players.GetPlayer(3);
 
-        print(playerOne.name);
-        print(playerTwo.name);
-        print(playerThree.name);
-        print(playerFour.name);
-
-
-        print("ReInput Player Count: " + ReInput.players.playerCount);
-        for (int i = 0; i < ReInput.players.playerCount; i++)
-        {
-            print(ReInput.players.GetPlayerId("Player" + (i + 1)));
-        }
-
-
-        //print(controlsAssigned.Count);
-        //for(int i = 0; i < controlsAssigned.Count; i++)
-        //{
-        //    print("Player " + (i + 1)+ " " + controlsAssigned[i]);
-        //}
-
         if (playerTwo.GetButtonDown("Back"))
         {
             print("Unassigning Controls for Player " + playerTwo.descriptiveName);
@@ -246,7 +241,10 @@ public class AssignControls : MonoBehaviour {
     void UnAssignController(Player player)
     {
         UpdatePlayerCount();
-        player.controllers.RemoveController(player.controllers.GetController(ControllerType.Joystick, player.id));
+        player.controllers.RemoveController(player.controllers.Joysticks[0]);
+        //player.controllers.ClearLastActiveControllerChangedDelegates();
+
+           // player.controllers.RemoveController(player.controllers.GetController(ControllerType.Joystick, player.id));
        // player.controllers.hasKeyboard = false;
        // player.controllers.hasMouse = false;
     }
