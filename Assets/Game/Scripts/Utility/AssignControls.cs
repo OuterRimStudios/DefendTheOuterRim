@@ -162,7 +162,6 @@ public class AssignControls : MonoBehaviour {
         IList<Player> players = ReInput.players.Players;
         for (int i = 0 + controllerInUse; i < players.Count; i++)
         {
-            print(players[i].controllers.joystickCount);
             if (players[i].controllers.joystickCount > 0) continue;
             return players[i];
         }

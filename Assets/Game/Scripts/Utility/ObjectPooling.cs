@@ -13,6 +13,7 @@ public class ObjectPooling : MonoBehaviour
     
     void Start()
     {
+        transform.parent = null;
         pooledObjects = new List<GameObject>();
 
         for (int i = 0; i < pooledAmount; i++)

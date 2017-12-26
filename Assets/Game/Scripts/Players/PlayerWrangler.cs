@@ -30,27 +30,33 @@ public class PlayerWrangler : MonoBehaviour
         int playerNumber = players.IndexOf(player);
         player.GetComponent<PlayerInput>().playerID = playerNumber;
 
+        PlayerReferences playerRefs = player.GetComponent<PlayerReferences>();
+
         switch(playerNumber)
         {
             case 0:
-                player.transform.Find("Reticle").GetComponent<Image>().color = Color.blue;
-                player.transform.Find("PlayerTag").GetComponent<Image>().color = Color.blue;
-                player.transform.Find("PlayerNumber").GetComponent<Text>().color = Color.blue;
+                playerRefs.playerReticle.color = Color.blue;
+                playerRefs.playerArrow.color = Color.blue;
+                playerRefs.playerNumberTag.color = Color.blue;
+                playerRefs.playerNumberTag.text = "P1";
                 break;
             case 1:
-                player.transform.Find("Reticle").GetComponent<Image>().color = Color.red;
-                player.transform.Find("PlayerTag").GetComponent<Image>().color = Color.red;
-                player.transform.Find("PlayerNumber").GetComponent<Text>().color = Color.red;
+                playerRefs.playerReticle.color = Color.red;
+                playerRefs.playerArrow.color = Color.red;
+                playerRefs.playerNumberTag.color = Color.red;
+                playerRefs.playerNumberTag.text = "P2";
                 break;
             case 2:
-                player.transform.Find("Reticle").GetComponent<Image>().color = Color.yellow;
-                player.transform.Find("PlayerTag").GetComponent<Image>().color = Color.yellow;
-                player.transform.Find("PlayerNumber").GetComponent<Text>().color = Color.yellow;
+                playerRefs.playerReticle.color = Color.yellow;
+                playerRefs.playerArrow.color = Color.yellow;
+                playerRefs.playerNumberTag.color = Color.yellow;
+                playerRefs.playerNumberTag.text = "P3";
                 break;
             case 3:
-                player.transform.Find("Reticle").GetComponent<Image>().color = Color.green;
-                player.transform.Find("PlayerTag").GetComponent<Image>().color = Color.green;
-                player.transform.Find("PlayerNumber").GetComponent<Text>().color = Color.green;
+                playerRefs.playerReticle.color = Color.green;
+                playerRefs.playerArrow.color = Color.green;
+                playerRefs.playerNumberTag.color = Color.green;
+                playerRefs.playerNumberTag.text = "P4";
                 break;
         }
     }

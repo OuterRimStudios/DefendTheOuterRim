@@ -45,22 +45,24 @@ public class PlayerMovement : MonoBehaviour
     Camera mainCam;
     GameObject cursor;
     GameObject reticle;
+    PlayerReferences playerRefs;
 
     bool playerOne;
     bool increasingSpeed;
     bool decreasingSpeed;
 
-    void Awake()
+    void Start()
     {
         mainCam = Camera.main;
         speed = baseForwardSpeed;
+        playerRefs = GetComponent<PlayerReferences>();
 
 		if (GetComponent<PlayerInput> ().playerID == 0)
 			playerOne = true;
 
-        reticle = transform.Find("Reticle").gameObject;
+        reticle = playerRefs.playerReticle.gameObject;
 
-        cursor = transform.Find ("Cursor").gameObject;
+        cursor = playerRefs.playerCursor.gameObject;
 		cursor.transform.parent = transform.root;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

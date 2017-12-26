@@ -134,6 +134,12 @@ public class Weapon : MonoBehaviour
     bool delayActive;
     int alternateFireCount;
 
+    private void Start()
+    {
+        //This code is temporary and should be removed in the future.
+        projectile = GetComponent<PlayerReferences>().projectilePool;
+    }
+
     public virtual IEnumerator Fire()
     {
         //Runs if the weapon is delayed.
